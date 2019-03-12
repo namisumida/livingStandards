@@ -1,15 +1,14 @@
 # Import libraries 
-library(readxl)
 
 # Data
-undernourished <- read.csv("csv/Standards of living data - Undernourished.csv")
-under5 <- read.csv("csv/Standards of living data - Under 5 mortality.csv") 
-sanitation_urban <- read.csv("csv/Standards of living data - Sanitation (urban).csv") 
-sanitation_rural <- read.csv("csv/Standards of living data - Sanitation (rural).csv") 
-lifeExpectancy <- read.csv("csv/Standards of living data - Life expectancy.csv") 
-healthExpenditure <- read.csv("csv/Standards of living data - Health expenditure.csv") 
-maternal <- read.csv("csv/Standards of living data - Maternal mortality.csv") 
-ldc <- read.csv("csv/LDC_data - 2018.csv")
+undernourished <- read.csv("Data files/Standards of living data - Undernourished.csv")
+under5 <- read.csv("Data files/Standards of living data - Under 5 mortality.csv") 
+sanitation_urban <- read.csv("Data files/Standards of living data - Sanitation (urban).csv") 
+sanitation_rural <- read.csv("Data files/Standards of living data - Sanitation (rural).csv") 
+lifeExpectancy <- read.csv("Data files/Standards of living data - Life expectancy.csv") 
+healthExpenditure <- read.csv("Data files/Standards of living data - Health expenditure.csv") 
+maternal <- read.csv("Data files/Standards of living data - Maternal mortality.csv") 
+ldc <- read.csv("Data files/LDC_data - 2018.csv")
 ldc <- ldc[c("ISO..3", "Status")]
 ldc <- ldc[c(2:146),]
 
@@ -68,6 +67,15 @@ for (i in 175:ncol(merged)) { names(merged)[i] <- changeColName("healthExpenditu
 summary(maternal)
 merged <- merge(merged, maternal[,c(2,5:ncol(maternal))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
 for (i in 191:ncol(merged)) { names(merged)[i] <- changeColName("maternal", i)}
+names(merged) # 264 x 216
+# Create a world row and LDC average row
+merged$countryCode <- as.character(merged$countryCode)
+merged$countryName <- as.character(merged$countryName)
+avgWorld <- colMeans(merged[,3:ncol(merged)], na.rm=TRUE) # world
+avgLDC <- colMeans(subset(merged, LDC==1)[,3:ncol(merged)], na.rm=TRUE) # world
+merged <- rbind(merged, c("World", "World", avgWorld))
+merged <- rbind(merged, c("LDC", "LDC", avgLDC))
+write.csv(merged, "Data files/merged.csv")
 
 
 # Analysis
@@ -75,13 +83,3 @@ summary(latest) # world
 summary(subset(latest, countryName=="United States"))
 summary(subset(latest, LDC==1))
 
-# Summary output
-output <- list()
-for (i in 3:(ncol(latest)-1)) {
-  world <- mean(latest[,i], na.rm = TRUE)
-  usa <- mean(subset(latest, latest$countryName=="United States")[,i], na.rm = TRUE)
-  ldc <- mean(subset(latest, latest$LDC==1)[,i], na.rm = TRUE)
-  output <- rbind(output, c(names(latest)[i], world, usa, ldc))
-}
-output <- as.data.frame(output)
-names(output) <- c("metric", "world", "usa", "ldc")
