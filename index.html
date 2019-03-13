@@ -7,26 +7,36 @@
 	<link type="text/css" href="index.css" rel="stylesheet"/>
 </head>
 <body>
-  <div id="intro">
-		<h1 id="intro-title">Standards of Living</h1>
-		<h3 id="intro-subtitle">Using data from the World Bank, we compared several health metrics in the US and in some of the least developed countries in the world to better understand how standards of living can widely vary around the world.</h3>
-		<div id="author-date">
-			<h5 id="author">By Nami Sumida</h5>
-			<h5 id="date">April 2019</h5>
-		</div>
-	</div>
-  <div id="main">
-		<div id="ldc-subsection">
-			<h3 class="accordion" id="accordion-ldc">LEAST DEVELOPED COUNTRIES</h3>
-			<div class="panel">
-				<p class="subtitle sectionText">This is a categorization by the United Nations. Using a wide range of key economic, health, and education indicators, the Committee for Development Policy creates a list of <strong>least developed countries (LDCs)</strong>, made up of "low-income countries confronting severe structural impediments to sustainable development". They tend to have economic and environmental vulnerabilities, resulting in long-term structural handicaps. (Read more on <a href="https://www.un.org/development/desa/dpad/least-developed-country-category.html">their page</a>.)<br><br>As of 2018, there are <strong>47</strong> countries on the list:</p>
-					<ul class="columns" data-columns="2"><p id="ldc-p">Afghanistan<br>Angola<br>Bangladesh<br>Benin<br>Bhutan<br>Burkina Faso<br>Burundi<br>Cambodia<br>Central African Republic<br>Chad<br>Comoros<br>Democratic Republic of the Congo<br>Djibouti<br>Eritrea<br>Ethiopia<br>Gambia<br>Guinea<br>Guinea-Bissau<br>Haiti<br>Kiribati<br>Lao People's Democratic Republic<br>Lesotho<br>Liberia<br>Madagascar<br>Malawi<br>Mali<br>Mauritania<br>Mozambique<br>Myanmar<br>Nepal<br>Niger<br>Rwanda<br>S&atilde;o Tom&eacute; and Pr&iacute;ncipe<br>Senegal<br>Sierra Leone<br>Solomon Islands<br>Somalia<br>South Sudan<br>Sudan<br>Timor-Leste<br>Togo<br>Tuvalu<br>Uganda<br>United Republic of Tanzania<br>Vanuatu<br>Yemen<br>Zambia</p></ul>
+	<div id="intro-wrapper">
+	  <div id="intro">
+			<h1 id="intro-title">Standards of Living</h1>
+			<h3 id="intro-subtitle">Using data from the World Bank, we compared several health metrics in the US and in some of the least developed countries in the world to better understand how standards of living can widely vary around the world.</h3>
+			<div id="author-date">
+				<h5 id="author">By Nami Sumida</h5>
+				<h5 id="date">April 2019</h5>
 			</div>
 		</div>
 	</div>
-  <div id='methods'>
-		<p class="subtitle" id="methods-text">Data for this story come from the <a href="https://data.worldbank.org/indicator">World Bank's Data Group</a>. Least developed countries were determined using the <a href="https://www.un.org/development/desa/dpad/least-developed-country-category.html">classification</a> created by the UN.<br><br>
-		All charts were developed using d3.js. You may find all the code and data for this project on <a href="https://github.com/namisumida/livingStandard">GitHub</a>.</p>
+	<div id="main-wrapper">
+  	<div id="main">
+			<div class="main-section" id="lifeExpectancy-section"></div>
+			<div class="main-section" id="ldc-section">
+				<h3 class="accordion" id="accordion-ldc">LEAST DEVELOPED COUNTRIES</h3>
+				<div class="panel">
+					<p class="subtitle sectionText">This is a categorization by the United Nations. Using a wide range of key economic, health, and education indicators, the Committee for Development Policy creates a list of <strong>least developed countries (LDCs)</strong>, made up of "low-income countries confronting severe structural impediments to sustainable development". They tend to have economic and environmental vulnerabilities and long-term structural handicaps. (Read more on <a href="https://www.un.org/development/desa/dpad/least-developed-country-category.html">their page</a>.)<br><br>As of 2018, there are <strong>47</strong> countries on the list:</p>
+						<ul class="columns" data-columns="2"><p id="ldc-p">Afghanistan<br>Angola<br>Bangladesh<br>Benin<br>Bhutan<br>Burkina Faso<br>Burundi<br>Cambodia<br>Central African Republic<br>Chad<br>Comoros<br>Democratic Republic of the Congo<br>Djibouti<br>Eritrea<br>Ethiopia<br>Gambia<br>Guinea<br>Guinea-Bissau<br>Haiti<br>Kiribati<br>Lao People's Democratic Republic<br>Lesotho<br>Liberia<br>Madagascar<br>Malawi<br>Mali<br>Mauritania<br>Mozambique<br>Myanmar<br>Nepal<br>Niger<br>Rwanda<br>S&atilde;o Tom&eacute; and Pr&iacute;ncipe<br>Senegal<br>Sierra Leone<br>Solomon Islands<br>Somalia<br>South Sudan<br>Sudan<br>Timor-Leste<br>Togo<br>Tuvalu<br>Uganda<br>United Republic of Tanzania<br>Vanuatu<br>Yemen<br>Zambia</p></ul>
+				</div>
+			</div>
+			<div class="main-section" id="undernourished-section"></div>
+			<div class="main-section" id="otherMetrics-section"></div>
+			<div class="main-section" id="healthExpense-section"></div>
+		</div>
+	</div>
+	<div id="methods-wrapper">
+		<div id='methods'>
+			<p class="subtitle" id="methods-text">Data for this story come from the <a href="https://data.worldbank.org/indicator">World Bank's Data Group</a>. Least developed countries were determined using the <a href="https://www.un.org/development/desa/dpad/least-developed-country-category.html">classification</a> created by the UN.<br><br>
+			All charts were developed using d3.js. You may find all the code and data for this project on <a href="https://github.com/namisumida/livingStandard">GitHub</a>.</p>
+		</div>
 	</div>
 
   <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
