@@ -49,12 +49,16 @@ a {
 #main {
   max-width: 40rem;
   padding: 1rem;
-  height: 800px;
-  display: flex;
-  margin: 0 auto;
+  height: 1000px;
+  margin: auto;
 }
-#main-section {
-
+.section-title {
+  font-weight: 800;
+  font-size: 20px;
+}
+.main-section {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .panel {
@@ -70,8 +74,8 @@ a {
   padding-left: 20px;
   background: $lightBlue;
   line-height: 30px;
-  font-weight: 800;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
   transition: 0.3s;
   margin: 0;
