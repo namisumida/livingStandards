@@ -1,36 +1,47 @@
-body, html {
+body {
   min-width: 300px;
+  max-width: 40rem;
+  padding: 1rem;
   font-family: system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-  background-color: #F1F1F1; }
+  margin: auto; }
 
-#header {
+#intro {
   margin: 0 auto;
-  max-width: 600px;
-  margin-top: 50px; }
+  margin-top: 6rem;
+  margin-bottom: 50px; }
 
-a {
-  cursor: pointer;
-  font-weight: 500; }
+#intro-subtitle {
+  max-width: 500px;
+  margin: auto;
+  margin-top: 20px; }
 
-#options {
-  max-width: 350px;
+#author-date {
+  max-width: 250px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: auto;
-  margin-bottom: 20px; }
+  margin: auto; }
+
+#author {
+  width: 50%;
+  text-align: center; }
+
+#date {
+  width: 50%;
+  text-align: center; }
+
+a {
+  cursor: pointer;
+  font-weight: 500;
+  color: #FC5742; }
 
 #main {
-  max-width: 600px;
   height: 800px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   margin: 0 auto;
   margin-bottom: 20px; }
-
-#ldc-subsection {
-  max-width: 100%; }
 
 .panel {
   max-height: 0;
@@ -48,7 +59,7 @@ a {
   background: #D6ECFD;
   line-height: 30px;
   font-weight: 800;
-  font-size: 14px;
+  font-size: 18px;
   cursor: pointer;
   -webkit-transition: 0.3s;
   -o-transition: 0.3s;
@@ -75,31 +86,37 @@ ul {
 #methods {
   margin: 0 auto;
   max-width: 650px;
-  margin-bottom: 50px;
+  margin-bottom: 6rem;
   border-top: dashed 0.5px gray; }
 
 #methods-text {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 300; }
 
 @media screen and (min-width: 399px) {
   h1 {
-    font-size: 30px;
+    font-size: 50px;
     text-align: center;
-    margin: 0; }
+    margin: 0;
+    font-weight: 900; }
   h3 {
-    font-size: 14px; }
+    font-size: 18px;
+    font-weight: 300; }
   p {
-    font-size: 13px;
-    font-weight: 200; } }
+    font-size: 15px;
+    font-weight: 200;
+    line-height: 1.5; } }
 
 @media screen and (max-width: 400px) {
   h1 {
     font-size: 20px;
     text-align: center;
-    margin: 0; }
+    margin: 0;
+    font-weight: 900; }
   h3 {
-    font-size: 12px; }
+    font-size: 12px;
+    font-weight: 300; }
   p {
     font-size: 11px;
-    font-weight: 200; } }
+    font-weight: 200;
+    line-height: 1.5; } }
