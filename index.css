@@ -56,10 +56,21 @@ a {
   padding-top: 20px;
   padding-bottom: 20px; }
 
+svg {
+  margin-top: 30px; }
+
 .locationLabel {
   text-anchor: middle;
   font-weight: 700;
   font-size: 15px; }
+
+.lineMarkers {
+  stroke: #FC5742;
+  stroke-width: 2;
+  stroke-dasharray: 5,4; }
+
+.lifeExpectancyBars {
+  fill: #D6ECFD; }
 
 .panel {
   max-height: 0;
