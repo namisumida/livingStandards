@@ -45,8 +45,8 @@ a {
 #main {
   max-width: 40rem;
   padding: 1rem;
-  height: 1000px;
-  margin: auto; }
+  margin: auto;
+  height: 100%; }
 
 .section-title {
   font-weight: 800;
@@ -55,6 +55,11 @@ a {
 .main-section {
   padding-top: 20px;
   padding-bottom: 20px; }
+
+.locationLabel {
+  text-anchor: middle;
+  font-weight: 700;
+  font-size: 15px; }
 
 .panel {
   max-height: 0;
