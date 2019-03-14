@@ -75,7 +75,7 @@ avgWorld <- colMeans(merged[,3:ncol(merged)], na.rm=TRUE) # world
 avgLDC <- colMeans(subset(merged, LDC==1)[,3:ncol(merged)], na.rm=TRUE) # world
 merged <- rbind(merged, c("World", "World", avgWorld))
 merged <- rbind(merged, c("LDC", "LDC", avgLDC))
-write.csv(merged, "Data files/merged.csv")
+write.csv(merged, "Data files/merged.csv", row.names = FALSE)
 
 
 # Analysis

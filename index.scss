@@ -63,6 +63,20 @@ a {
 svg {
   margin-top: 30px;
 }
+.timelineDots {
+  opacity: 0.2;
+  fill: $blue;
+}
+.avgLine {
+  stroke: $accentColor;
+  stroke-width: 2;
+  stroke-dasharray: 5,4;
+}
+.avgText {
+  fill: $accentColor;
+  font-size: 13px;
+  text-anchor: middle;
+}
 .locationLabel {
   text-anchor: middle;
   font-weight: 700;
@@ -72,7 +86,6 @@ svg {
   stroke: $accentColor;
   stroke-width: 2;
   stroke-dasharray: 5,4;
-
 }
 .lifeExpectancyBars {
   fill: $lightBlue;

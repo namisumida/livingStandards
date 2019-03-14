@@ -1,6 +1,8 @@
 function init() {
   // Assign svg variables
-  var svg_lifeExpectancy = d3.select("#svg-lifeExpectancy");
+  var svg_lifeExpectancy_comp = d3.select("#svg-lifeExpectancy_comp");
+  var svg_lifeExpectancy_timeline = d3.select("#svg-lifeExpectancy_timeline");
+  var svg_lifeExpectancy_random = d3.select("#svg-lifeExpectancy_random");
   var svg_undernourished = d3.select("#svg-undernourished");
   var svg_other = d3.select("#svg-otherMetrics");
   var svg_healthExpense = d3.select("#svg-healthExpense");
@@ -30,62 +32,92 @@ function init() {
                             {year: 2000, value: 12, group:"ldc"}, {year: 2015, value: 45, group:"ldc"}];
 
   // Margins
-  var w = document.getElementById("svg-lifeExpectancy").getBoundingClientRect().width;
+  var w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
   var marginLeft = 10;
   var marginRight = 10;
   var marginTop = 5;
+  // Margins for timeline
+  var w_maxDot = w - marginRight - marginLeft;
+  // Margins for comparison view
   var w_locationLabel = (w - marginLeft - marginRight)/3;
   var w_bar = 70;
   var h_maxBar = 275;
   // Height of svgs
-  var h_svg = 350;
-  document.getElementById("svg-lifeExpectancy").style.height = h_svg + "px";
-  document.getElementById("svg-undernourished").style.height = h_svg + "px";
-  document.getElementById("svg-otherMetrics").style.height = h_svg + "px";
-  document.getElementById("svg-healthExpense").style.height = h_svg + "px";
+  var h_svgComp = 350;
+  var h_svgTimeline = 150;
+  document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
+  document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
+  document.getElementById("svg-undernourished").style.height = h_svgComp + "px";
+  document.getElementById("svg-otherMetrics").style.height = h_svgComp + "px";
+  document.getElementById("svg-healthExpense").style.height = h_svgComp + "px";
 
   ////////////////////////////////////////////////////////////////////////////////
   function setup() {
     // LIFE EXPECTANCY
-    svg_lifeExpectancy.selectAll("locationLabel")
-                      .data(data_locations)
-                      .enter()
-                      .append("text")
-                      .attr("class", "locationLabel")
-                      .attr("x", function(d,i) { return marginLeft + i*(w_locationLabel) + w_locationLabel/2; })
-                      .attr("y", 315)
-                      .text(function(d) { return d; })
-                      .call(wrap, 150);
-    svg_lifeExpectancy.selectAll("rect")
-                      .data(data_lifeExpectancy)
-                      .enter()
-                      .append("rect")
-                      .attr("class", "lifeExpectancyBars")
-                      .attr("x", function(d,i) {
-                        if (d.group == "world") { return marginLeft + w_locationLabel/2 - w_bar/2; }
-                        else if (d.group == "usa") { return marginLeft + w_locationLabel*1.5 - w_bar/2; }
-                        else { return marginLeft + w_locationLabel*2.5 - w_bar/2; }
-                      })
-                      .attr("y", function(d) { return marginTop + h_maxBar - runBarScale("lifeExpectancy", d.value); })
-                      .attr("width", w_bar)
-                      .attr("height", function(d) { return runBarScale("lifeExpectancy", d.value); })
-    svg_lifeExpectancy.selectAll("line")
-                      .data(data_lifeExpectancy)
-                      .enter()
-                      .append("line")
-                      .attr("class", "lineMarkers")
-                      .attr("x1", function(d,i) {
-                        if (d.group == "world") { return marginLeft + w_locationLabel/2 - w_bar/2; }
-                        else if (d.group == "usa") { return marginLeft + w_locationLabel*1.5 - w_bar/2; }
-                        else { return marginLeft + w_locationLabel*2.5 - w_bar/2; }
-                      })
-                      .attr("x2", function(d,i) {
-                        if (d.group == "world") { return marginLeft + w_locationLabel/2 + w_bar/2; }
-                        else if (d.group == "usa") { return marginLeft + w_locationLabel*1.5 + w_bar/2; }
-                        else { return marginLeft + w_locationLabel*2.5 + w_bar/2; }
-                      })
-                      .attr("y1", function(d) { return marginTop + h_maxBar - runBarScale("lifeExpectancy", d.value); })
-                      .attr("y2", function(d) { return marginTop + h_maxBar - runBarScale("lifeExpectancy", d.value); })
+    // Timeline; all countries
+    svg_lifeExpectancy_timeline.selectAll("timelineDots")
+                               .data(dataset_countries.filter(function(d) { return d.lifeExpectancy_latest>0; }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }))
+                               .enter()
+                               .append("circle")
+                               .attr("class", "timelineDots")
+                               .attr("r", 7)
+                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); })
+                               .attr("cy", 30);
+    svg_lifeExpectancy_timeline.append("line")
+                               .attr("class", "avgLine")
+                               .attr("x1", runDotScale("lifeExpectancy", 72))
+                               .attr("x2", runDotScale("lifeExpectancy", 72))
+                               .attr("y1", 15)
+                               .attr("y2", 45);
+    svg_lifeExpectancy_timeline.append("text")
+                               .attr("class", "avgText")
+                               .attr("x", runDotScale("lifeExpectancy", 72))
+                               .attr("y", 60)
+                               .text("Average: 72")
+                               .call(wrap, 100)
+
+
+
+    // Comparison
+    svg_lifeExpectancy_comp.selectAll("locationLabel")
+                            .data(data_locations)
+                            .enter()
+                            .append("text")
+                            .attr("class", "locationLabel")
+                            .attr("x", function(d,i) { return marginLeft + i*(w_locationLabel) + w_locationLabel/2; })
+                            .attr("y", 315)
+                            .text(function(d) { return d; })
+                            .call(wrap, 150);
+    svg_lifeExpectancy_comp.selectAll("rect")
+                            .data(data_lifeExpectancy)
+                            .enter()
+                            .append("rect")
+                            .attr("class", "lifeExpectancyBars")
+                            .attr("x", function(d,i) {
+                              if (d.group == "world") { return marginLeft + w_locationLabel/2 - w_bar/2; }
+                              else if (d.group == "usa") { return marginLeft + w_locationLabel*1.5 - w_bar/2; }
+                              else { return marginLeft + w_locationLabel*2.5 - w_bar/2; }
+                            })
+                            .attr("y", function(d) { return marginTop + h_maxBar - runBarScale("lifeExpectancy", d.value); })
+                            .attr("width", w_bar)
+                            .attr("height", function(d) { return runBarScale("lifeExpectancy", d.value); })
+    svg_lifeExpectancy_comp.selectAll("line")
+                            .data(data_lifeExpectancy)
+                            .enter()
+                            .append("line")
+                            .attr("class", "lineMarkers")
+                            .attr("x1", function(d,i) {
+                              if (d.group == "world") { return marginLeft + w_locationLabel/2 - w_bar/2; }
+                              else if (d.group == "usa") { return marginLeft + w_locationLabel*1.5 - w_bar/2; }
+                              else { return marginLeft + w_locationLabel*2.5 - w_bar/2; }
+                            })
+                            .attr("x2", function(d,i) {
+                              if (d.group == "world") { return marginLeft + w_locationLabel/2 + w_bar/2; }
+                              else if (d.group == "usa") { return marginLeft + w_locationLabel*1.5 + w_bar/2; }
+                              else { return marginLeft + w_locationLabel*2.5 + w_bar/2; }
+                            })
+                            .attr("y1", function(d) { return marginTop + h_maxBar - runBarScale("lifeExpectancy", d.value); })
+                            .attr("y2", function(d) { return marginTop + h_maxBar - runBarScale("lifeExpectancy", d.value); })
 
 
     // UNDERNOURISHED
@@ -149,7 +181,19 @@ function init() {
                      .range([0, h_maxBar]);
     return barScale(value);
   }; // end getScale
-
+  function runDotScale(type, value) {
+    if (type=="lifeExpectancy") { var variable = "lifeExpectancy_latest"; }
+    else if (type=="undernourished") { var variable = "lifeExpectancy_latest"; }
+    else if (type=="under5mortality") { var variable = "lifeExpectancy_latest"; }
+    else if (type=="maternalMortality") { var variable = "lifeExpectancy_latest"; }
+    else if (type=="sanitationUrban") { var variable = "lifeExpectancy_latest"; }
+    else if (type=="sanitationRural") { var variable = "lifeExpectancy_latest"; }
+    else { var variable = "lifeExpectancy_latest"; }
+    var dotScale = d3.scaleLinear()
+                     .domain([45, d3.max(dataset_countries, function(d) { return d[variable]; })])
+                     .range([marginLeft, marginLeft + w_maxDot]);
+    return dotScale(value);
+  }
   setup();
 
   // Interactivity
@@ -170,4 +214,28 @@ function init() {
   }; // end for loop
 }; // end init
 ////////////////////////////////////////////////////////////////////////////////
-init();
+function rowConverter(d) {
+  return {
+    countryCode: d.countryCode,
+    countryName: d.countryName,
+    ldc: parseInt(d.ldc),
+    undernourished_old: parseFloat(d.undernourished2000),
+    undernourished_latest: parseFloat(d.undernourished2016),
+    under5_old: parseFloat(d.under5_1960),
+    under5_latest: parseFloat(d.under5_2017),
+    sanitationUrban_old: parseFloat(d.sanitationUrban2000),
+    sanitationUrban_latest: parseFloat(d.sanitationUrban2015),
+    sanitationRural_old: parseFloat(d.sanitationRural2000),
+    sanitationRural_latest: parseFloat(d.sanitationRural2015),
+    lifeExpectancy_old: parseFloat(d.lifeExpectancy1960),
+    lifeExpectancy_latest: parseFloat(d.lifeExpectancy2016),
+    healthExpenditure_old: parseFloat(d.healthExpenditure2000),
+    healthExpenditure_latest: parseFloat(d.healthExpenditure2015),
+    maternal_old: parseFloat(d.maternal1990),
+    maternal_latest: parseFloat(d.maternal2015),
+  }
+}; // end rowConverter
+d3.csv("Data & analysis/Data files/merged.csv", rowConverter, function(data) {
+  dataset_countries = data;
+  init();
+})
