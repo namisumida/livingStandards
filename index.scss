@@ -1,7 +1,8 @@
 $backgroundGray: #F1F1F1;
 $blue: #669BB5;
-$lightBlue: #D6ECFD;
+$babyBlue: #D6ECFD;
 $accentColor: #FC5742;
+$lightBlue: #BACFDA;
 
 body {
   min-width: 300px;
@@ -9,7 +10,7 @@ body {
   margin: auto;
 }
 #intro-wrapper {
-  background-color: $lightBlue;
+  background-color: $babyBlue;
   padding-top: 6rem;
   padding-bottom: 50px;
 }
@@ -83,6 +84,20 @@ svg {
   font-size: 10px;
   text-anchor: middle;
 }
+.timelineDots {
+  fill: $blue;
+}
+.timelineDots_old {
+  fill: $lightBlue;
+}
+.timelineRect {
+  opacity: 0.4;
+  fill: $lightBlue;
+}
+.timelineLabels {
+  text-anchor: "start";
+  font-size: 11px;
+}
 .locationLabel {
   text-anchor: middle;
   font-weight: 700;
@@ -94,20 +109,20 @@ svg {
   stroke-dasharray: 5,4;
 }
 .lifeExpectancyBars {
-  fill: $lightBlue;
+  fill: $babyBlue;
 }
 .panel {
   max-height: 0;
   overflow: hidden;
   padding-left: 20px;
   padding-right: 20px;
-  background-color: $lightBlue;
+  background-color: $babyBlue;
   transition: max-height 0.3s ease-out;
 }
 .accordion {
   padding: 5px;
   padding-left: 20px;
-  background: $lightBlue;
+  background: $babyBlue;
   line-height: 30px;
   font-weight: 700;
   font-size: 16px;
@@ -136,7 +151,7 @@ ul {
 #methods-wrapper {
   padding-top: 50px;
   padding-bottom: 6rem;
-  background-color: $lightBlue;
+  background-color: $babyBlue;
 }
 #methods {
   max-width: 40rem;

@@ -68,13 +68,8 @@ summary(maternal)
 merged <- merge(merged, maternal[,c(2,5:ncol(maternal))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
 for (i in 191:ncol(merged)) { names(merged)[i] <- changeColName("maternal", i)}
 names(merged) # 264 x 216
-# Create a world row and LDC average row
-merged$countryCode <- as.character(merged$countryCode)
-merged$countryName <- as.character(merged$countryName)
-avgWorld <- colMeans(merged[,3:ncol(merged)], na.rm=TRUE) # world
-avgLDC <- colMeans(subset(merged, LDC==1)[,3:ncol(merged)], na.rm=TRUE) # world
-merged <- rbind(merged, c("World", "World", avgWorld))
-merged <- rbind(merged, c("LDC", "LDC", avgLDC))
+
+
 write.csv(merged, "Data files/merged.csv", row.names = FALSE)
 
 

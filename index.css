@@ -79,6 +79,20 @@ svg {
   font-size: 10px;
   text-anchor: middle; }
 
+.timelineDots {
+  fill: #669BB5; }
+
+.timelineDots_old {
+  fill: #BACFDA; }
+
+.timelineRect {
+  opacity: 0.4;
+  fill: #BACFDA; }
+
+.timelineLabels {
+  text-anchor: "start";
+  font-size: 11px; }
+
 .locationLabel {
   text-anchor: middle;
   font-weight: 700;
