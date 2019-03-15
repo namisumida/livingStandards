@@ -1,12 +1,11 @@
 function init() {
   // Assign svg variables
   var svg_lifeExpectancy_comp = d3.select("#svg-lifeExpectancy_comp");
+  var svg_lifeExpectancy_topline = d3.select("#svg-lifeExpectancy_topline");
   var svg_lifeExpectancy_timeline = d3.select("#svg-lifeExpectancy_timeline");
-  var svg_lifeExpectancy_random = d3.select("#svg-lifeExpectancy_random");
   var svg_undernourished = d3.select("#svg-undernourished");
   var svg_other = d3.select("#svg-otherMetrics");
   var svg_healthExpense = d3.select("#svg-healthExpense");
-
   // Data
   var data_locations = ["WORLD", "UNITED STATES", "LEAST DEVELOPED COUNTRIES"];
   var data_lifeExpectancy = [{year: 1960, value: 53, group:"world"}, {year: 1980, value: 63, group:"world"}, {year: 2000, value: 68, group:"world"}, {year: 2016, value: 72, group:"world"},
@@ -30,13 +29,12 @@ function init() {
   var data_healthExpense = [{year: 2000, value: 473, group:"world"}, {year: 2015, value: 1002, group:"world"},
                             {year: 2000, value: 4562, group:"usa"}, {year: 2015, value: 9536, group:"usa"},
                             {year: 2000, value: 12, group:"ldc"}, {year: 2015, value: 45, group:"ldc"}];
-
   // Margins
   var w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
   var marginLeft = 10;
   var marginRight = 10;
   var marginTop = 5;
-  // Margins for timeline
+  // Margins for topline
   var w_maxDot = w - marginRight - marginLeft;
   // Margins for comparison view
   var w_locationLabel = (w - marginLeft - marginRight)/3;
@@ -44,40 +42,78 @@ function init() {
   var h_maxBar = 275;
   // Height of svgs
   var h_svgComp = 350;
-  var h_svgTimeline = 150;
+  var h_svgTopline = 80;
+  var h_svgTimeline = 310;
+  document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
   document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
   document.getElementById("svg-undernourished").style.height = h_svgComp + "px";
   document.getElementById("svg-otherMetrics").style.height = h_svgComp + "px";
   document.getElementById("svg-healthExpense").style.height = h_svgComp + "px";
+  // Colors
+  var backgroundGray = d3.color("#F1F1F1");
+  var blue = d3.color("#669BB5");
+  var lightBlue = d3.color("#D6ECFD");
+  var accentColor = d3.color("#FC5742");
 
   ////////////////////////////////////////////////////////////////////////////////
   function setup() {
     // LIFE EXPECTANCY
-    // Timeline; all countries
-    svg_lifeExpectancy_timeline.selectAll("timelineDots")
-                               .data(dataset_countries.filter(function(d) { return d.lifeExpectancy_latest>0; }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }))
+    // Topline; all countries
+    var dataset_lifeExpectancy = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_latest); });
+    var lifeExpectancy_highlights = [d3.min(dataset_countries, function(d) { return d.lifeExpectancy_latest; }), d3.max(dataset_countries, function(d) { return d.lifeExpectancy_latest; }), 72];
+    svg_lifeExpectancy_topline.selectAll("toplineDots")
+                               .data(dataset_lifeExpectancy.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }))
                                .enter()
                                .append("circle")
-                               .attr("class", "timelineDots")
+                               .attr("class", "toplineDots")
                                .attr("r", 7)
                                .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); })
-                               .attr("cy", 30);
-    svg_lifeExpectancy_timeline.append("line")
+                               .attr("cy", 20)
+                               .style("stroke", function(d) {
+                                 if (lifeExpectancy_highlights.includes(d.lifeExpectancy_latest)) { return accentColor; }
+                               })
+                               .style("stroke-width", function(d) {
+                                 if (lifeExpectancy_highlights.includes(d.lifeExpectancy_latest)) { return 4; }
+                               });
+    svg_lifeExpectancy_topline.append("line")
                                .attr("class", "avgLine")
                                .attr("x1", runDotScale("lifeExpectancy", 72))
                                .attr("x2", runDotScale("lifeExpectancy", 72))
-                               .attr("y1", 15)
-                               .attr("y2", 45);
-    svg_lifeExpectancy_timeline.append("text")
-                               .attr("class", "avgText")
-                               .attr("x", runDotScale("lifeExpectancy", 72))
-                               .attr("y", 60)
-                               .text("Average: 72")
-                               .call(wrap, 100)
-
-
-
+                               .attr("y1", 5)
+                               .attr("y2", 35);
+    svg_lifeExpectancy_topline.selectAll("highlightText")
+                               .data(lifeExpectancy_highlights)
+                               .enter()
+                               .append("text")
+                               .attr("class", "highlightText")
+                               .attr("x", function(d) { return runDotScale("lifeExpectancy", d); })
+                               .attr("y", 50)
+                               .text(function(d,i) {
+                                 if (i == 0) { return "Minimum: " + Math.round(d); }
+                                 else if (i == 1) { return "Maximum: " + Math.round(d); }
+                                 else { return "Average: " + Math.round(d); }
+                               })
+                               .call(wrap, 70);
+    svg_lifeExpectancy_topline.selectAll("axisLabel")
+                               .data([60, 80])
+                               .enter()
+                               .append("text")
+                               .attr("class", "axisLabel")
+                               .attr("x", function(d) { return runDotScale("lifeExpectancy", d); })
+                               .attr("y", 50)
+                               .text(function(d) { return d; });
+    // Timeline; random set of countries
+    var randomArray = randomGenerate(20, dataset_lifeExpectancy.length);
+    var random_lifeExpectancy = dataset_lifeExpectancy.filter(function(d,i) { return randomArray.includes(i); });
+    svg_lifeExpectancy_timeline.selectAll("circle")
+                                .data(random_lifeExpectancy.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }))
+                                .enter()
+                                .append("circle")
+                                .attr("class", "toplineDots")
+                                .attr("r", 7)
+                                .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); })
+                                .attr("cy", function(d,i) { return 10 + (i*15); })
     // Comparison
     svg_lifeExpectancy_comp.selectAll("locationLabel")
                             .data(data_locations)
@@ -191,8 +227,16 @@ function init() {
     else { var variable = "lifeExpectancy_latest"; }
     var dotScale = d3.scaleLinear()
                      .domain([45, d3.max(dataset_countries, function(d) { return d[variable]; })])
-                     .range([marginLeft, marginLeft + w_maxDot]);
+                     .range([marginLeft, w_maxDot-20]);
     return dotScale(value);
+  }; // end runDotScale
+  function randomGenerate(length, max) {
+    var array = [];
+    while (array.length < length) {
+      var random = Math.floor(Math.random()*max);
+      if (array.indexOf(random) === -1) { array.push(random); }
+    }
+    return array;
   }
   setup();
 

@@ -57,9 +57,10 @@ a {
   padding-bottom: 20px; }
 
 svg {
-  margin-top: 30px; }
+  margin-top: 40px;
+  margin-bottom: 40px; }
 
-.timelineDots {
+.toplineDots {
   opacity: 0.2;
   fill: #669BB5; }
 
@@ -68,9 +69,14 @@ svg {
   stroke-width: 2;
   stroke-dasharray: 5,4; }
 
-.avgText {
+.highlightText {
   fill: #FC5742;
   font-size: 13px;
+  text-anchor: middle; }
+
+.axisLabel {
+  fill: #FC5742;
+  font-size: 10px;
   text-anchor: middle; }
 
 .locationLabel {
