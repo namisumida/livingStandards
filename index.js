@@ -36,6 +36,8 @@ function init() {
   var marginTop = 5;
   // Margins for topline
   var w_maxDot = w - marginRight - marginLeft;
+  // Margins for timeline
+  var marginLeftMore = 30;
   // Margins for comparison view
   var w_locationLabel = (w - marginLeft - marginRight)/3;
   var w_bar = 70;
@@ -137,6 +139,11 @@ function init() {
                                .text(function(d) {
                                  if (d.countryName == "Federated States of Micronesia") { return "Micronesia"; }
                                  else if (d.countryName == "St. Vincent and the Grenadines") { return "St. Vincent & Grenadines"; }
+                                 else if (d.countryName == "United Kingdom") { return "UK"; }
+                                 else if (d.countryName == "United States") { return "USA"; }
+                                 else if (d.countryName == "Trinidad and Tobago") { return "Trinidad & Tobago"; }
+                                 else if (d.countryName == "Bosnia and Herzegovina") { return "Bosnia & Herzegovina"; }
+                                 else if (d.countryName == "Sao Tome and Principe") { return "S&atilde;o Tom&eacute; and Pr&iacute;ncipe"; }
                                  else { return d.countryName; }
                                })
                                .attr("x", function(d) {
@@ -328,7 +335,7 @@ function init() {
     }
     var dotScale = d3.scaleLinear()
                      .domain([min, max])
-                     .range([marginLeft, w_maxDot-20]);
+                     .range([marginLeftMore, w_maxDot-marginRight]);
     return dotScale(value);
   }; // end runDotScale
   function randomGenerate(length, max) {
@@ -338,10 +345,51 @@ function init() {
       if (array.indexOf(random) === -1) { array.push(random); }
     }
     return array;
-  }
+  }; // end randomGenerate
+  function updateTimeline() {
+    var dataset_lifeExpectancy20 = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_old); });
+    var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
+    var random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
+    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .data(random_lifeExpectancy);
+    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .select(".timelineRect")
+                               .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old); })
+                               .attr("width", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old); })
+    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .select(".timelineDots_old")
+                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old); });
+    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .select(".timelineDots")
+                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); });
+    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .select(".timelineLabels")
+                               .text(function(d) {
+                                 if (d.countryName == "Federated States of Micronesia") { return "Micronesia"; }
+                                 else if (d.countryName == "St. Vincent and the Grenadines") { return "St. Vincent & Grenadines"; }
+                                 else { return d.countryName; }
+                               })
+                               .attr("x", function(d) {
+                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old) > 90) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old) + 10; }
+                                 else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old) - 10; }
+                               })
+                               .style("text-anchor", function(d) {
+                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old) > 90) { return "start"; }
+                                 else { return "end"; }
+                               });
+    svg_lifeExpectancy_timeline.selectAll(".axisLabel")
+                               .attr("x", function(d,i) {
+                                 if (i==0) { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_old); }
+                                 else { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_latest); }
+                               });
+  }; // end updateTimeline
   setup();
 
   // Interactivity
+  // Randomize 20 countries
+  d3.select("#button-randomize").on("click", function() {
+    updateTimeline();
+  });
   // LDC accordion //// TODO: Change this if I only have 1 accordion
   var accordions = jQuery(".accordion");
   for (var i=0; i<accordions.length; i++) {

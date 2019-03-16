@@ -38,6 +38,21 @@ a {
   font-weight: 500;
   color: #FC5742; }
 
+button {
+  background-color: #FC5742;
+  opacity: 0.8;
+  font-size: 12px;
+  border-radius: 2px;
+  height: 23px;
+  font-weight: 500;
+  border: 1.5px solid;
+  cursor: pointer;
+  margin: 1px; }
+
+.section-text {
+  margin-top: 40px;
+  margin-bottom: 40px; }
+
 #main-wrapper {
   background-color: #F1F1F1;
   padding-bottom: 20px; }
@@ -86,6 +101,9 @@ a {
 
 .timelineLabels {
   font-size: 11px; }
+
+#button-randomize {
+  float: right; }
 
 .locationLabel {
   text-anchor: middle;
