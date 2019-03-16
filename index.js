@@ -43,7 +43,7 @@ function init() {
   // Height of svgs
   var h_svgComp = 350;
   var h_svgTopline = 80;
-  var h_svgTimeline = 510;
+  var h_svgTimeline = 455;
   document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
   document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
@@ -105,7 +105,7 @@ function init() {
                                .text(function(d) { return d; });
     // Timeline; random set of countries
     var dataset_lifeExpectancy20 = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_old); })
-    var randomArray = randomGenerate(25, dataset_lifeExpectancy20.length);
+    var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
     var random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
     svg_lifeExpectancy_timeline.selectAll("timelineGroup")
                                .data(random_lifeExpectancy)
@@ -113,24 +113,24 @@ function init() {
                                .append("g")
                                .attr("class", "timelineGroup");
     svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                               .append("circle")
-                               .attr("class", "timelineDots_old")
-                               .attr("r", 6)
-                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old); })
-                               .attr("cy", function(d,i) { return 20 + (i*20); });
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
                                .append("rect")
                                .attr("class", "timelineRect")
                                .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old); })
-                               .attr("y", function(d,i) { return 16 + (i*20); })
-                               .attr("height", 10)
+                               .attr("y", function(d,i) { return 19 + (i*22); })
+                               .attr("height", 12)
                                .attr("width", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old); })
+    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .append("circle")
+                               .attr("class", "timelineDots_old")
+                               .attr("r", 7)
+                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old); })
+                               .attr("cy", function(d,i) { return 25 + (i*22); });
     svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
                                 .append("circle")
                                 .attr("class", "timelineDots")
-                                .attr("r", 6)
+                                .attr("r", 7)
                                 .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); })
-                                .attr("cy", function(d,i) { return 20 + (i*20); });
+                                .attr("cy", function(d,i) { return 25 + (i*22); });
     svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
                                .append("text")
                                .attr("class", "timelineLabels")
@@ -143,7 +143,7 @@ function init() {
                                  if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old) > 90) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old) + 10; }
                                  else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old) - 10; }
                                })
-                               .attr("y", function(d,i) { return 24 + (i*20)})
+                               .attr("y", function(d,i) { return 29 + (i*22)})
                                .style("text-anchor", function(d) {
                                  if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old) > 90) { return "start"; }
                                  else { return "end"; }
@@ -154,7 +154,46 @@ function init() {
                                .append("text")
                                .attr("class", "axisLabel")
                                .text(function(d) { return d; })
-                               .attr("x", random_lifeExpectancy[0])
+                               .attr("x", function(d,i) {
+                                 if (i==0) { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_old); }
+                                 else { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_latest); }
+                               })
+                               .attr("y", 10);
+    // on click
+    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .on("mouseover", function(d) {
+                                 var currGroup = d3.select(this);
+                                 currGroup.select(".timelineDots").style("fill", accentColor);
+                                 currGroup.select(".timelineDots_old").style("fill", accentColor);
+                                 currGroup.select(".timelineRect").style("opacity", 1);
+                                 currGroup.append("text")
+                                          .attr("class", "axisLabel")
+                                          .text(function(d) { return Math.round(d.lifeExpectancy_old); })
+                                          .attr("x", function(d) {
+                                            if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old) > 90) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
+                                            else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
+                                          })
+                                          .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                                          .style("text-anchor", function(d) {
+                                            if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest) - runDotScale("lifeExpectancy", d.lifeExpectancy_old) > 90) { return "end"; }
+                                            else { return "start"; }
+                                          })
+                                          .style("fill", accentColor);
+                                currGroup.append("text")
+                                         .attr("class", "axisLabel")
+                                         .text(function(d) { return Math.round(d.lifeExpectancy_latest); })
+                                         .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
+                                         .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                                         .style("text-anchor", "start")
+                                         .style("fill", accentColor);
+                               })
+                               .on("mouseout", function() {
+                                 var currGroup = d3.select(this);
+                                 currGroup.select(".timelineDots").style("fill", blue);
+                                 currGroup.select(".timelineDots_old").style("fill", lightBlue);
+                                 currGroup.select(".timelineRect").style("opacity", 0.5);
+                                 currGroup.selectAll(".axisLabel").remove();
+                               })
     // Comparison
     svg_lifeExpectancy_comp.selectAll("locationLabel")
                             .data(data_locations)

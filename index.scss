@@ -61,10 +61,6 @@ a {
   padding-top: 20px;
   padding-bottom: 20px;
 }
-svg {
-  margin-top: 40px;
-  margin-bottom: 40px;
-}
 .toplineDots {
   opacity: 0.2;
   fill: $blue;
@@ -80,8 +76,7 @@ svg {
   text-anchor: middle;
 }
 .axisLabel {
-  fill: $accentColor;
-  font-size: 10px;
+  font-size: 11px;
   text-anchor: middle;
 }
 .timelineDots {
@@ -95,7 +90,6 @@ svg {
   fill: $lightBlue;
 }
 .timelineLabels {
-  text-anchor: "start";
   font-size: 11px;
 }
 .locationLabel {

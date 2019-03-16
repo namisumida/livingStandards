@@ -56,10 +56,6 @@ a {
   padding-top: 20px;
   padding-bottom: 20px; }
 
-svg {
-  margin-top: 40px;
-  margin-bottom: 40px; }
-
 .toplineDots {
   opacity: 0.2;
   fill: #669BB5; }
@@ -75,8 +71,7 @@ svg {
   text-anchor: middle; }
 
 .axisLabel {
-  fill: #FC5742;
-  font-size: 10px;
+  font-size: 11px;
   text-anchor: middle; }
 
 .timelineDots {
@@ -90,7 +85,6 @@ svg {
   fill: #BACFDA; }
 
 .timelineLabels {
-  text-anchor: "start";
   font-size: 11px; }
 
 .locationLabel {
