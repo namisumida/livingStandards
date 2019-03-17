@@ -94,6 +94,9 @@ button {
 #svg-lifeExpectancy_timeline {
   margin-bottom: 15px;
 }
+.timelineGroup {
+  cursor: pointer;
+}
 .axisLabel {
   font-size: 11px;
   text-anchor: middle;
@@ -112,7 +115,6 @@ button {
   font-size: 11px;
 }
 .lineMarkers_timeline {
-  stroke: $blue;
   stroke-width: 1.5;
   stroke-dasharray: 5,4;
   opacity: 0.3;
@@ -120,23 +122,17 @@ button {
 .lineMarkerLabels {
   font-size: 11px;
   text-anchor: middle;
-  fill: $blue;
 }
 #button-randomize {
   float: right;
 }
-.locationLabel {
-  text-anchor: middle;
-  font-weight: 700;
-  font-size: 15px;
+.compDots {
+  fill: $blue;
+  opacity: 0.2;
 }
-.lineMarkers {
-  stroke: $accentColor;
-  stroke-width: 2;
-  stroke-dasharray: 5,4;
-}
-.lifeExpectancyBars {
-  fill: #ABC6D3;
+.compDotsOld {
+  fill: $yellow;
+  opacity: 0.2;
 }
 .panel {
   max-height: 0;
