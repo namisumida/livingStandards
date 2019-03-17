@@ -3,6 +3,7 @@ $blue: #669BB5;
 $babyBlue: #D6ECFD;
 $accentColor: #FC5742;
 $lightBlue: #BACFDA;
+$yellow: #E2CA84;
 
 body {
   min-width: 300px;
@@ -90,6 +91,9 @@ button {
   font-size: 13px;
   text-anchor: middle;
 }
+#svg-lifeExpectancy_timeline {
+  margin-bottom: 15px;
+}
 .axisLabel {
   font-size: 11px;
   text-anchor: middle;
@@ -98,7 +102,7 @@ button {
   fill: $blue;
 }
 .timelineDots_old {
-  fill: $lightBlue;
+  fill: $yellow;
 }
 .timelineRect {
   opacity: 0.4;
@@ -106,6 +110,17 @@ button {
 }
 .timelineLabels {
   font-size: 11px;
+}
+.lineMarkers_timeline {
+  stroke: $blue;
+  stroke-width: 1.5;
+  stroke-dasharray: 5,4;
+  opacity: 0.3;
+}
+.lineMarkerLabels {
+  font-size: 11px;
+  text-anchor: middle;
+  fill: $blue;
 }
 #button-randomize {
   float: right;
@@ -121,7 +136,7 @@ button {
   stroke-dasharray: 5,4;
 }
 .lifeExpectancyBars {
-  fill: $babyBlue;
+  fill: #ABC6D3;
 }
 .panel {
   max-height: 0;

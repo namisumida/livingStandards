@@ -85,6 +85,9 @@ button {
   font-size: 13px;
   text-anchor: middle; }
 
+#svg-lifeExpectancy_timeline {
+  margin-bottom: 15px; }
+
 .axisLabel {
   font-size: 11px;
   text-anchor: middle; }
@@ -93,7 +96,7 @@ button {
   fill: #669BB5; }
 
 .timelineDots_old {
-  fill: #BACFDA; }
+  fill: #E2CA84; }
 
 .timelineRect {
   opacity: 0.4;
@@ -101,6 +104,17 @@ button {
 
 .timelineLabels {
   font-size: 11px; }
+
+.lineMarkers_timeline {
+  stroke: #669BB5;
+  stroke-width: 1.5;
+  stroke-dasharray: 5,4;
+  opacity: 0.3; }
+
+.lineMarkerLabels {
+  font-size: 11px;
+  text-anchor: middle;
+  fill: #669BB5; }
 
 #button-randomize {
   float: right; }
@@ -116,7 +130,7 @@ button {
   stroke-dasharray: 5,4; }
 
 .lifeExpectancyBars {
-  fill: #D6ECFD; }
+  fill: #ABC6D3; }
 
 .panel {
   max-height: 0;
