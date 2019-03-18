@@ -39,7 +39,7 @@ a {
   color: #FC5742; }
 
 button {
-  background-color: #FC5742;
+  background-color: #F1F1F1;
   opacity: 0.8;
   font-size: 12px;
   border-radius: 2px;
@@ -74,6 +74,7 @@ button {
   padding-bottom: 20px; }
 
 .accordion-section {
+  padding-top: 30px;
   padding-bottom: 30px; }
 
 .toplineDots {
@@ -123,25 +124,26 @@ button {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  float: right;
+  -webkit-box-flex: flex-wrap;
+  -ms-flex: flex-wrap;
+  flex: flex-wrap;
+  margin: auto;
   margin-bottom: 30px; }
 
-#button-metric {
+.button-metric {
+  background-color: #FC5742; }
+
+.compGroup {
+  cursor: pointer; }
+
+#button-LDCchange {
   display: none; }
 
-#button-randomize {
-  float: right; }
+#button-LDCmetric {
+  display: none; }
 
-.compDots {
-  fill: #669BB5;
-  opacity: 0.2; }
-
-.compDotsOld {
-  fill: #E2CA84;
-  opacity: 0.2; }
-
-#button-showLDC {
-  margin-top: 20px; }
+#button-LDCrandomize {
+  display: none; }
 
 .panel {
   max-height: 0;
