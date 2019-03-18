@@ -54,6 +54,8 @@ button {
   border: 1.5px solid;
   cursor: pointer;
   margin: 1px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 .section-text {
   margin-top: 40px;
@@ -77,6 +79,9 @@ button {
   padding-top: 20px;
   padding-bottom: 20px;
 }
+.accordion-section {
+  padding-bottom: 30px;
+}
 .toplineDots {
   opacity: 0.2;
   fill: $blue;
@@ -90,9 +95,6 @@ button {
   fill: $accentColor;
   font-size: 13px;
   text-anchor: middle;
-}
-#svg-lifeExpectancy_timeline {
-  margin-bottom: 15px;
 }
 .timelineGroup {
   cursor: pointer;
@@ -123,6 +125,14 @@ button {
   font-size: 11px;
   text-anchor: middle;
 }
+#button-container {
+  display: flex;
+  float: right;
+  margin-bottom: 30px;
+}
+#button-metric {
+  display: none;
+}
 #button-randomize {
   float: right;
 }
@@ -133,6 +143,9 @@ button {
 .compDotsOld {
   fill: $yellow;
   opacity: 0.2;
+}
+#button-showLDC {
+  margin-top: 20px;
 }
 .panel {
   max-height: 0;
@@ -161,6 +174,16 @@ button {
 }
 .active:after {
   content: "\2796";
+}
+#accordion-ldcTimeline {
+  font-size: 13px;
+  width: 75%;
+  margin: auto;
+  margin-top: 20px;
+  background-color: $babyBlue;
+}
+#panel-ldcTimeline {
+  background-color: $backgroundGray
 }
 ul {
   columns: 2;

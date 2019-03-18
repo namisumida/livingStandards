@@ -1,11 +1,15 @@
 function init() {
   // Assign svg variables
-  var svg_lifeExpectancy_comp = d3.select("#svg-lifeExpectancy_comp");
   var svg_lifeExpectancy_topline = d3.select("#svg-lifeExpectancy_topline");
   var svg_lifeExpectancy_timeline = d3.select("#svg-lifeExpectancy_timeline");
+  var svg_lifeExpectancy_comp = d3.select("#svg-lifeExpectancy_comp");
+  var svg_lifeExpectancy_comp2 = d3.select("#svg-lifeExpectancy_comp2");
   var svg_undernourished = d3.select("#svg-undernourished");
   var svg_other = d3.select("#svg-otherMetrics");
   var svg_healthExpense = d3.select("#svg-healthExpense");
+  // Dataset
+  var random_lifeExpectancy;
+  var sort;
   // Margins
   var w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
   var marginLeft = 10;
@@ -20,12 +24,13 @@ function init() {
   var w_bar = 70;
   var h_maxBar = 275;
   // Height of svgs
-  var h_svgComp = 350;
   var h_svgTopline = 80;
   var h_svgTimeline = 500;
+  var h_svgComp = 80;
   document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
   document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
+  document.getElementById("svg-lifeExpectancy_comp2").style.height = h_svgTimeline + "px";
   document.getElementById("svg-undernourished").style.height = h_svgComp + "px";
   document.getElementById("svg-otherMetrics").style.height = h_svgComp + "px";
   document.getElementById("svg-healthExpense").style.height = h_svgComp + "px";
@@ -78,7 +83,7 @@ function init() {
     // Timeline; random set of countries
     var dataset_lifeExpectancy20 = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_old); })
     var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
-    var random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
+    random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
     svg_lifeExpectancy_timeline.selectAll("lineMarkers")
                                .data([63,52,72,84])
                                .enter()
@@ -225,7 +230,7 @@ function init() {
                            .attr("class", "timelineLabels")
                            .text(function(d,i) {
                              if (i==0) { return "USA"; }
-                             else { return "Least developed countries"; }
+                             else { return "Least developed countries (avg)"; }
                            })
                            .attr("x", function(d) {
                              if (runDotScale("lifeExpectancy", d.latest, "timeline") - runDotScale("lifeExpectancy", d.old, "timeline") > 90) { return runDotScale("lifeExpectancy", d.old, "timeline") + 10; }
@@ -297,6 +302,7 @@ function init() {
 
   }; // end setup
   function reset() {
+    sort = "metric";
   }; // end reset function
   function resize() {
   }; // end resize function
@@ -399,12 +405,30 @@ function init() {
     }
     return array;
   }; // end randomGenerate
-  function updateTimeline() {
+  function updateTimeline(type) {
     var dataset_lifeExpectancy20 = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_old); });
-    var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
-    var random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                               .data(random_lifeExpectancy);
+    if (type=="randomize") {
+      var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
+      random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); });
+      if (sort == "metric") { random_lifeExpectancy = random_lifeExpectancy.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }) }
+      else { random_lifeExpectancy = random_lifeExpectancy.sort(function(a,b) { return (b.lifeExpectancy_latest-b.lifeExpectancy_old) - (a.lifeExpectancy_latest-a.lifeExpectancy_old); }) };
+      svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                                 .data(random_lifeExpectancy);
+    }
+    else if (type=="sortChange") {
+      sort = "change";
+      svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                                 .data(random_lifeExpectancy.sort(function(a,b) { return (b.lifeExpectancy_latest-b.lifeExpectancy_old) - (a.lifeExpectancy_latest-a.lifeExpectancy_old); }));
+      d3.select("#button-metric").style("display", "inline");
+      d3.select("#button-change").style("display", "none");
+    }
+    else {
+      sort = "metric";
+      svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                                 .data(random_lifeExpectancy.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }))
+      d3.select("#button-change").style("display", "inline");
+      d3.select("#button-metric").style("display", "none");
+    }
     svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
                                .select(".timelineRect")
                                .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
@@ -436,13 +460,22 @@ function init() {
                                  else { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_latest, "timeline"); }
                                });
   }; // end updateTimeline
+  reset();
   setup();
 
   // Interactivity
   // Randomize 20 countries
   d3.select("#button-randomize").on("click", function() {
-    updateTimeline();
+    updateTimeline("randomize");
   });
+  // Sort by years increased
+  d3.select("#button-change").on("click", function() {
+    updateTimeline("sortChange")
+  }); // end on click button-change
+  // Sort by life expectancy
+  d3.select("#button-metric").on("click", function() {
+    updateTimeline("sortMetric")
+  }); // end on click button-change
   // LDC accordion //// TODO: Change this if I only have 1 accordion
   var accordions = jQuery(".accordion");
   for (var i=0; i<accordions.length; i++) {
