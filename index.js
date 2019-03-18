@@ -78,7 +78,7 @@ function init() {
     var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
     random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
     svg_lifeExpectancy_timeline.selectAll("lineMarkers")
-                               .data([63,52,72,84])
+                               .data([63,72])
                                .enter()
                                .append("line")
                                .attr("class", "lineMarkers_timeline")
@@ -89,9 +89,13 @@ function init() {
                                .style("stroke", function(d,i) {
                                  if (i==0) { return yellow; }
                                  else { return blue; }
+                               })
+                               .style("opacity", function(d,i) {
+                                 if (i==0) { return 0.5; }
+                                 else { return 0.3; }
                                });
     svg_lifeExpectancy_timeline.selectAll("lineMarkerLabels")
-                               .data([63,52,72,84])
+                               .data([63,72])
                                .enter()
                                .append("text")
                                .attr("class", "lineMarkerLabels")
@@ -99,9 +103,7 @@ function init() {
                                .attr("y", h_svgTimeline-20)
                                .text(function(d,i) {
                                  if (i==0) { return "1960 global avg"; }
-                                 else if (i==1) { return "2016 global min"; }
-                                 else if (i==2) { return "2016 global avg"; }
-                                 else { return "2016 global max"}
+                                 else { return "2016 global avg"}
                                })
                                .call(wrap, 60)
                                .style("fill", function(d,i) {
@@ -203,6 +205,10 @@ function init() {
                            .attr("x2", function(d) { return runDotScale("lifeExpectancy", d, "timeline"); })
                            .attr("y1", 20)
                            .attr("y2", h_svgComp-35)
+                           .style("opacity", function(d,i) {
+                             if (i==0) { return 0.5; }
+                             else { return 0.3; }
+                           })
                            .style("stroke", "none");
     svg_lifeExpectancy_comp.selectAll("lineMarkerLabels")
                            .data([70,79])
@@ -218,7 +224,7 @@ function init() {
                            .call(wrap, 60)
                            .style("fill", "none");
     svg_lifeExpectancy_comp.selectAll("compGroup")
-                           .data([{"country": "USA", "old": 70, "latest": 79}, {"country": "LDC", "old": 40, "latest": 64}])
+                           .data([{"country": "USA", "old": 70, "latest": 79}, {"country": "LDC", "old": 40, "latest": 63}])
                            .enter()
                            .append("g")
                            .attr("class", "compAvgGroup");
@@ -270,7 +276,7 @@ function init() {
                              else { return "end"; }
                            })
                            .style("font-weight", 800)
-                           .style("font-size", "13px");
+                           .style("font-size", "12px");
     svg_lifeExpectancy_comp.selectAll(".compAvgGroup")
                            .append("text")
                            .attr("class", "axisLabel")
