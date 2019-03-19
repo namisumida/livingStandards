@@ -136,15 +136,6 @@ button {
 .compGroup {
   cursor: pointer; }
 
-#button-LDCchange {
-  display: none; }
-
-#button-LDCmetric {
-  display: none; }
-
-#button-LDCrandomize {
-  display: none; }
-
 .panel {
   max-height: 0;
   overflow: hidden;
@@ -229,8 +220,14 @@ ul {
   height: 36px;
   width: 100px; }
 
-#otherMetrics-chart {
-  border-top: 1px solid; }
+#button-otherRandomize {
+  display: none; }
+
+#button-otherMetric {
+  display: none; }
+
+#button-otherChange {
+  display: none; }
 
 #methods-wrapper {
   padding-top: 50px;

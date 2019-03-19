@@ -24,12 +24,12 @@ function init() {
   var h_svgTopline = 80;
   var h_svgTimeline = 500;
   var h_svgComp = 370;
-  var h_svgComp_init = 70;
+  var h_svgOther_init = 200;
   var h_svgOther = 630;
   document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
-  document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp_init + "px";
-  document.getElementById("svg-otherMetrics").style.height = 0 + "px";
+  document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
+  document.getElementById("svg-otherMetrics").style.height = h_svgOther_init + "px";
   // Colors
   var backgroundGray = d3.color("#F1F1F1");
   var blue = d3.color("#669BB5");
@@ -212,7 +212,10 @@ function init() {
                              if (i==0) { return 0.5; }
                              else { return 0.3; }
                            })
-                           .style("stroke", "none");
+                           .style("stroke", function(d,i) {
+                             if (i==0) { return yellow; }
+                             else { return blue; }
+                           });
     svg_lifeExpectancy_comp.selectAll("lineMarkerLabels")
                            .data([70,79])
                            .enter()
@@ -225,7 +228,10 @@ function init() {
                              else { return "2016 USA avg"}
                            })
                            .call(wrap, 60)
-                           .style("fill", "none");
+                           .style("fill", function(d,i) {
+                             if (i==0) { return yellow; }
+                             else { return blue; }
+                           });
     svg_lifeExpectancy_comp.selectAll("axisLabel")
                            .data(["1960", "2016"])
                            .enter()
@@ -330,22 +336,29 @@ function init() {
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("rect")
                            .attr("class", "timelineRect")
-                           .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
                            .attr("y", function(d,i) { return 70 + (i+1)*25; })
-                           .attr("height", 12);
+                           .attr("height", 12)
+                           .attr("width", function(d) { return Math.abs(runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline")); })
+                           .attr("x", function(d) {
+                             return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline");
+                           })
+                           .style("fill", function(d) {
+                             if (d.lifeExpectancy_latest > d.lifeExpectancy_old) { return blue; }
+                             else { return "red"; }
+                           });
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("circle")
                            .attr("class", "timelineDots")
                            .attr("r", 7)
-                           .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
                            .attr("cy", function(d,i) { return 75 + (i+1)*25; })
-                           .style("fill", "none");
+                           .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline"); })
+                           .style("fill", blue);
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("circle")
                            .attr("class", "timelineDots_old")
                            .attr("r", 7)
-                           .attr("cx", runDotScale("lifeExpectancy", 40, "timeline"))
-                           .attr("cy", 55);
+                           .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
+                           .attr("cy", function(d,i) { return 75 + (i+1)*25; });
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("text")
                            .attr("class", "timelineLabels")
@@ -392,7 +405,7 @@ function init() {
                            })
     // Other metrics - initial load is undernourished
     svg_otherMetrics.selectAll("lineMarkers")
-                     .data([3,3])
+                     .data([2.5,2.5])
                      .enter()
                      .append("line")
                      .attr("class", "lineMarkers_timeline")
@@ -406,7 +419,7 @@ function init() {
                        else { return 0.3; }
                      });
     svg_otherMetrics.selectAll("lineMarkerLabels")
-                     .data([3,3])
+                     .data([2.5,2.5])
                      .enter()
                      .append("text")
                      .attr("class", "lineMarkerLabels")
@@ -837,18 +850,6 @@ function init() {
        .duration(1000)
        .delay(2500)
        .text(function(d) { return d.countryName; });
-    svg.selectAll(".compGroup").select("#axisLabelOld")
-       .transition()
-       .ease(d3.easeLinear)
-       .duration(1000)
-       .delay(2500)
-       .style("fill", yellow);
-    svg.selectAll(".compGroup").select("#axisLabelLatest")
-       .transition()
-       .ease(d3.easeLinear)
-       .duration(1000)
-       .delay(2500)
-       .style("fill", blue);
     svg.selectAll(".lineMarkers_timeline")
        .transition()
        .ease(d3.easeLinear)
@@ -961,15 +962,6 @@ function init() {
   }); // end on click button-change
 
   // LDC BUTTONS
-  // Show specific least developed countries
-  d3.select("#button-showLDC").on("click", function() {
-    document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp+"px";
-    transitionLDC(svg_lifeExpectancy_comp, "lifeExpectancy");
-    d3.select("#button-LDCchange").style("display", "inline");
-    d3.select("#button-LDCmetric").style("display", "inline").style("background-color", accentColor);
-    d3.select("#button-LDCrandomize").style("display", "inline");
-    d3.select("#button-showLDC").style("display", "none");
-  });
   // Randomize 10
   d3.select("#button-LDCrandomize").on("click", function() {
     updateLDC("randomize");
@@ -1000,8 +992,12 @@ function init() {
 
   // Other metrics buttons
   // Show metrics
-  d3.select("#button-undernourished").on("click", function() {
+  d3.select("#button-otherShow").on("click", function() {
     document.getElementById("svg-otherMetrics").style.height = h_svgOther + "px";
+    document.getElementById("button-otherShow").style.display = "none";
+    document.getElementById("button-otherRandomize").style.display = "inline";
+    document.getElementById("button-otherChange").style.display = "inline";
+    document.getElementById("button-otherMetric").style.display = "inline";
     transitionLDC(svg_otherMetrics, "undernourished");
   });
   // Show more LDCs
