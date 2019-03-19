@@ -6,7 +6,7 @@ function init() {
   var svg_otherMetrics = d3.select("#svg-otherMetrics");
   // Dataset
   var random_lifeExpectancy, dataset_lifeExpectancyComp10;
-  var sort;
+  var sort, currOtherMetric;
   // Margins
   var w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
   var marginLeft = 10;
@@ -29,7 +29,7 @@ function init() {
   document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
   document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp_init + "px";
-  document.getElementById("svg-otherMetrics").style.height = h_svgOther + "px";
+  document.getElementById("svg-otherMetrics").style.height = 0 + "px";
   // Colors
   var backgroundGray = d3.color("#F1F1F1");
   var blue = d3.color("#669BB5");
@@ -488,7 +488,7 @@ function init() {
                        else { return "end"; }
                      })
                      .style("fill", blue);
-    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d.undernourished_latest) & !isNaN(d.undernourished_old) & d.ldc == 1; }).sort(function(a,b) { return b.undernourished_latest - a.undernourished_latest; });
+    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d.undernourished_latest) & !isNaN(d.undernourished_old) & d.ldc == 1; }).sort(function(a,b) { return a.undernourished_latest - b.undernourished_latest; });
     var randomArray10 = randomGenerate(20, dataset_otherMetrics.length);
     dataset_otherMetrics20 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
     svg_otherMetrics.selectAll("compLDCgroup")
@@ -519,13 +519,19 @@ function init() {
                      .append("text")
                      .attr("class", "timelineLabels")
                      .attr("x", function(d) {
-                       if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) { return runDotScale("undernourished", d.undernourished_old, "timeline") - 10; }
+                       // if it doesn't fit into rect
+                       if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90)
+                        if (d.undernourished_old > d.undernourished_latest){ return runDotScale("undernourished", d.undernourished_old, "timeline") - 10; }
+                        else { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
                        else if (d.undernourished_old > d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
                        else { return runDotScale("undernourished", d.undernourished_old, "timeline") - 15; } // if increased over time
                      })
                      .attr("y", function(d,i) { return 79 + (i+1)*25; })
                      .style("text-anchor", function(d) {
-                       if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) { return "end"; }
+                       if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) {
+                         if (d.undernourished_old > d.undernourished_latest) { return "end"; }
+                         else { return "start"; }
+                       }
                        else if (d.undernourished_old > d.undernourished_latest) { return "start"; }
                        else { return "end"; }
                      });
@@ -538,21 +544,38 @@ function init() {
                                 .attr("class", "axisLabel")
                                 .text(function(d) { return Math.round(d.undernourished_old); })
                                 .attr("x", function(d) {
-                                  if (Math.abs(runDotScale("undernourished", d.undernourished_latest, "timeline") - runDotScale("undernourished", d.undernourished_old, "timeline")) > 90) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
-                                  else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
+                                  // if country name doesn't fit in rectangle
+                                  if (Math.abs(runDotScale("undernourished", d.undernourished_latest, "timeline") - runDotScale("undernourished", d.undernourished_old, "timeline")) < 90) {
+                                    if (d.undernourished_old > d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_old, "timeline") + parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) + 20; }
+                                    else { return runDotScale("undernourished", d.undernourished_old, "timeline") - parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) - 20; }
+                                  }
+                                  // if it does fit
+                                  else {
+                                    if (d.undernourished_old > d.undernourished_latest) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+15; }
+                                    else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
+                                  }
                                 })
                                 .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
                                 .style("text-anchor", function(d) {
-                                  if (Math.abs(runDotScale("undernourished", d.undernourished_latest, "timeline") - runDotScale("undernourished", d.undernourished_old, "timeline")) > 90) { return "end"; }
-                                  else { return "start"; }
+                                  if (Math.abs(runDotScale("undernourished", d.undernourished_latest, "timeline") - runDotScale("undernourished", d.undernourished_old, "timeline")) > 90 & d.undernourished_old > d.undernourished_latest) { return "start"; }
+                                  else {
+                                    if (d.undernourished_old > d.undernourished_latest) { return "start"; }
+                                    else { return "end"; }
+                                  }
                                 })
                                 .style("fill", accentColor);
                       currGroup.append("text")
                                .attr("class", "axisLabel")
                                .text(function(d) { return Math.round(d.undernourished_latest); })
-                               .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
+                               .attr("x", function(d) {
+                                 if (d.undernourished_old < d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_latest, "timeline") + 15; }
+                                 else { return parseFloat(currGroup.select(".timelineDots").attr("cx"))-15; }
+                               })
                                .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                               .style("text-anchor", "start")
+                               .style("text-anchor", function(d) {
+                                 if (d.undernourished_old < d.undernourished_latest) { return "start"; }
+                                 else { return "end"; }
+                               })
                                .style("fill", accentColor);
                      })
                      .on("mouseout", function() {
@@ -561,12 +584,10 @@ function init() {
                        currGroup.select(".timelineDots_old").style("fill", yellow);
                        currGroup.selectAll(".axisLabel").remove();
                      });
-  transitionLDC(svg_otherMetrics, "undernourished");
-
-
   }; // end setup
   function reset() {
     sort = "metric";
+    currOtherMetric = "undernourished";
   }; // end reset function
   function resize() {
   }; // end resize function
@@ -854,15 +875,20 @@ function init() {
     if (type=="randomize") {
       var randomArray10 = randomGenerate(20, dataset_otherMetrics.length);
       dataset_otherMetrics20 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
-      if (sort == "metric") { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
-      else { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }) };
-      svg_lifeExpectancy_comp.selectAll(".compGroup")
-                             .data(dataset_otherMetrics20);
+      if (sort == "metric") {
+        if (metric == "undernourished" | metric == "under5" | metric == "maternal") {
+          dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; })
+        }
+        else { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+      }
+      else { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }) };
+      svg_otherMetrics.selectAll(".compGroup")
+                      .data(dataset_otherMetrics20);
     }
     else if (type=="sortChange") {
       sort = "change";
-      svg_lifeExpectancy_comp.selectAll(".compGroup")
-                             .data(dataset_otherMetrics20.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }));
+      svg_otherMetrics.selectAll(".compGroup")
+                      .data(dataset_otherMetrics20.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }));
       d3.select("#button-otherMetric").style("background-color", backgroundGray);
       d3.select("#button-otherChange").style("background-color", accentColor);
     }
@@ -870,60 +896,51 @@ function init() {
       sort = "metric";
       d3.select("#button-otherMetric").style("background-color", accentColor);
       d3.select("#button-otherChange").style("background-color", backgroundGray);
-      svg_lifeExpectancy_comp.selectAll(".compGroup")
-                             .data(dataset_otherMetrics20.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }));
+      svg_otherMetrics.selectAll(".compGroup")
+                      .data(dataset_otherMetrics20.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; }));
     };
-    svg_otherMetrics.selectAll("compLDCgroup")
-                     .data(dataset_otherMetrics20);
     svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
-                     .attr("x", function(d) { return runDotScale(metric, d[variableOld], "timeline"); });
+                    .attr("x", function(d) {
+                      if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+                        if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableLatest], "timeline"); }
+                        else { return runDotScale(metric, d[variableOld], "timeline"); }
+                      }
+                      else { return runDotScale(metric, d[variableOld], "timeline"); }
+                    })
+                    .attr("width", function(d) { return Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")); })
+                    .style("fill", function(d) {
+                      if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+                        if (d[variableOld] > d[variableLatest]) { return blue; }
+                        else { return "red"; }
+                      }
+                      else {
+                        if (d[variableLatest] > d[variableOld]) { return blue; }
+                        else { return "red"; }
+                      }
+                    });
     svg_otherMetrics.selectAll(".compGroup").select(".timelineDots")
-                     .attr("cx", function(d) { return runDotScale(metric, d.undernourished_old, "timeline"); });
+                    .attr("cx", function(d) { return runDotScale(metric, d[variableLatest], "timeline"); });
     svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
-                     .attr("cx", runDotScale(metric, 35, "timeline"));
+                    .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
+                    .attr("cy", function(d,i) { return 75 + (i+1)*25; });
     svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
-                     .attr("x", function(d) {
-                       if (Math.abs(runDotScale(metric, d[variableOld], "timeline") - runDotScale(metric, d[variableLatest], "timeline")) > 90) { return runDotScale(metric, d[variableOld], "timeline") - 10; }
-                       else if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "timeline") + 15; }
-                       else { return runDotScale(metric, d[variableOld], "timeline") - 15; } // if increased over time
-                     })
-                     .style("text-anchor", function(d) {
-                       if (Math.abs(runDotScale(metric, d[variableOld], "timeline") - runDotScale(metric, d[variableLatest], "timeline")) > 90) { return "end"; }
-                       else if (d[variableOld] > d[variableLatest]) { return "start"; }
-                       else { return "end"; }
-                     });
-    svg_otherMetrics.selectAll(".compGroup")
-                     .on("mouseover", function(d) {
-                       var currGroup = d3.select(this);
-                       currGroup.select(".timelineDots").style("fill", accentColor);
-                       currGroup.select(".timelineDots_old").style("fill", accentColor);
-                       currGroup.append("text")
-                                .attr("class", "axisLabel")
-                                .text(function(d) { return Math.round(d[variableOld]); })
-                                .attr("x", function(d) {
-                                  if (Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")) > 90) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
-                                  else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
-                                })
-                                .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                                .style("text-anchor", function(d) {
-                                  if (Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")) > 90) { return "end"; }
-                                  else { return "start"; }
-                                })
-                                .style("fill", accentColor);
-                      currGroup.append("text")
-                               .attr("class", "axisLabel")
-                               .text(function(d) { return Math.round(d[variableLatest]); })
-                               .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
-                               .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                               .style("text-anchor", "start")
-                               .style("fill", accentColor);
-                     })
-                     .on("mouseout", function() {
-                       var currGroup = d3.select(this);
-                       currGroup.select(".timelineDots").style("fill", blue);
-                       currGroup.select(".timelineDots_old").style("fill", yellow);
-                       currGroup.selectAll(".axisLabel").remove();
-                     });
+                    .text(function(d) { return d.countryName; })
+                    .attr("x", function(d) {
+                      // if it doesn't fit into rect
+                      if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90)
+                       if (d.undernourished_old > d.undernourished_latest){ return runDotScale("undernourished", d.undernourished_old, "timeline") - 10; }
+                       else { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
+                      else if (d.undernourished_old > d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
+                      else { return runDotScale("undernourished", d.undernourished_old, "timeline") - 15; } // if increased over time
+                    })
+                    .style("text-anchor", function(d) {
+                      if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) {
+                        if (d.undernourished_old > d.undernourished_latest) { return "end"; }
+                        else { return "start"; }
+                      }
+                      else if (d.undernourished_old > d.undernourished_latest) { return "start"; }
+                      else { return "end"; }
+                    });
   };
   reset();
   setup();
@@ -982,10 +999,20 @@ function init() {
   }; // end for loop
 
   // Other metrics buttons
+  // Show metrics
+  d3.select("#button-undernourished").on("click", function() {
+    document.getElementById("svg-otherMetrics").style.height = h_svgOther + "px";
+    transitionLDC(svg_otherMetrics, "undernourished");
+  });
   // Show more LDCs
   d3.select("#button-otherRandomize").on("click", function() {
-    console.log("clicked");
-    updateOtherMetrics("randomize");
+    updateOtherMetrics("randomize", currOtherMetric);
+  });
+  d3.select("#button-otherChange").on("click", function() {
+    updateOtherMetrics("sortChange", currOtherMetric);
+  });
+  d3.select("#button-otherMetric").on("click", function() {
+    updateOtherMetrics("sortMetric", currOtherMetric);
   });
 }; // end init
 ////////////////////////////////////////////////////////////////////////////////
