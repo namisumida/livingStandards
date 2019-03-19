@@ -125,9 +125,8 @@ button {
   font-size: 11px;
   text-anchor: middle;
 }
-#button-container {
+.button-container {
   display: flex;
-  flex: flex-wrap;
   margin: auto;
   margin-bottom: 30px;
 }
@@ -192,7 +191,36 @@ ul {
 #ldc-p {
   margin: 0;
 }
-
+#button-metricsContainer {
+  flex-wrap: wrap;
+  margin: auto;
+  margin-bottom: 30px;
+}
+.button-otherMetrics {
+  margin-bottom: 10px;
+}
+#button-undernourished {
+  width: 110px;
+}
+#button-under5 {
+  height: 36px;
+  width: 110px;
+}
+#button-maternal {
+  height: 36px;
+  width: 110px;
+}
+#button-healthExpense {
+  width: 130px;
+}
+#button-sanitationUrban {
+  height: 36px;
+  width: 110px;
+}
+#button-sanitationRural {
+  height: 36px;
+  width: 110px;
+}
 #methods-wrapper {
   padding-top: 50px;
   padding-bottom: 6rem;

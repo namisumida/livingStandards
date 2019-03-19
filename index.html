@@ -20,18 +20,17 @@
 	<div id="main-wrapper">
   	<div id="main">
 			<div class="main-section" id="lifeExpectancy-section">
-				<text class="section-title">LIFE EXPECTANCY</text>
-				<p class="section-text">As of 2016, the average person on Earth can expect to live to 72 years old. But people in many countries can expect to live much longer. Those in Hong Kong, Japan, and Macau have an average life expectancy of 84. On the other hand, several have a life expectancy of much less: 15 countries are below 60.</p>
+				<p class="section-text">As of 2016, the average person can expect to live to 72 years old. But people in many countries can expect to live much longer. Those in Hong Kong, Japan, and Macau have an average life expectancy of 84. On the other hand, several have a life expectancy of much less: 15 countries are below 60.</p>
 				<svg id="svg-lifeExpectancy_topline" style="width: 100%"></svg>
 				<p class="section-text">Since 1960, the global average has increased by nearly 10 years - from 63 years old to 72. And while life expectancy ranges from country-to-country, all have seen increases in the past 50 years. In some countries, like Bhutan and the Maldives, increases are large (40 years!), while in some Eastern Europe countries like Ukraine, Lithuania, and Latvia, increases are under 5 years. <br><br>Let's pick out 20 random countries and see how life expectancy has increased in each.</p>
-				<div id="button-container">
+				<div class="button-container">
 					<button id="button-timelineRandomize" class="button-randomize">Show me 20 more countries</button>
 					<button id="button-timelineMetric" class="button-metric">Order by life expectancy</button>
 					<button id="button-timelineChange" class="button-change">Order by years increased</button>
 				</div>
 				<svg id="svg-lifeExpectancy_timeline" style="width: 100%"></svg>
 				<p class="section-text">And while life expectancy has increased in all countries, there is still a large gap between the most and least developed countries. <br><br>The U.S. has one of the highest life expectancies: 79. In comparison, people in some of the least developed countries tend to live to 63. That's lower than life expectancy in the U.S. in 1960.</p>
-				<div id="button-container">
+				<div class="button-container">
 					<button id="button-showLDC">Show specific least developed countries</button>
 					<button id="button-LDCrandomize" class="button-randomize">Show me 10 more countries</button>
 					<button id="button-LDCmetric" class="button-metric">Order by life expectancy</button>
@@ -41,10 +40,28 @@
 				<div class="accordion-section">
 					<h3 class="accordion" id="accordion-ldcExplainer">What are "least developed countries"?</h3>
 					<div class="panel">
-						<p class="subtitle sectionText">This is a categorization by the United Nations. Using a wide range of key economic, health, and education indicators, the Committee for Development Policy creates a list of <strong>least developed countries</strong>, made up of "low-income countries confronting severe structural impediments to sustainable development". They tend to have economic and environmental vulnerabilities and long-term structural handicaps. (Read more on <a href="https://www.un.org/development/desa/dpad/least-developed-country-category.html">their page</a>.)<br><br>As of 2018, there are <strong>47</strong> countries on the list:</p>
+						<p class="subtitle sectionText">This is a categorization by the UN. Using a wide range of key economic, health, and education indicators, the Committee for Development Policy creates a list of <strong>least developed countries</strong>, made up of "low-income countries confronting severe structural impediments to sustainable development". These countries tend to have economic and environmental vulnerabilities and long-term structural handicaps. <br>(Read more on <a href="https://www.un.org/development/desa/dpad/least-developed-country-category.html">their page</a>.)<br><br>As of 2018, <strong>47</strong> countries are on the list:</p>
 							<ul class="columns" data-columns="2"><p id="ldc-p">Afghanistan<br>Angola<br>Bangladesh<br>Benin<br>Bhutan<br>Burkina Faso<br>Burundi<br>Cambodia<br>Central African Republic<br>Chad<br>Comoros<br>Democratic Republic of the Congo<br>Djibouti<br>Eritrea<br>Ethiopia<br>Gambia<br>Guinea<br>Guinea-Bissau<br>Haiti<br>Kiribati<br>Lao People's Democratic Republic<br>Lesotho<br>Liberia<br>Madagascar<br>Malawi<br>Mali<br>Mauritania<br>Mozambique<br>Myanmar<br>Nepal<br>Niger<br>Rwanda<br>S&atilde;o Tom&eacute; and Pr&iacute;ncipe<br>Senegal<br>Sierra Leone<br>Solomon Islands<br>Somalia<br>South Sudan<br>Sudan<br>Timor-Leste<br>Togo<br>Tuvalu<br>Uganda<br>United Republic of Tanzania<br>Vanuatu<br>Yemen<br>Zambia</p></ul>
 					</div>
 				</div>
+			</div>
+			<div class="main-section" id="otherMetrics-section">
+				<p class="section-text">Some intro text</p>
+				<div id="button-metricsContainer">
+					<h5>Metrics</h5>
+					<button class="button-otherMetrics" id="button-undernourished">Undernourished</button>
+					<button class="button-otherMetrics" id="button-under5">Under 5 mortality rate</button>
+					<button class="button-otherMetrics" id="button-maternal">Maternal mortality rate</button>
+					<button class="button-otherMetrics" id="button-healthExpense">Health expenditure</button>
+					<button class="button-otherMetrics" id="button-sanitationUrban">Sanitation (urban areas)</button>
+					<button class="button-otherMetrics" id="button-sanitationRural">Sanitation (rural areas)</button>
+				</div>
+				<div class="button-container">
+					<button id="button-otherRadomize" class="button-randomize">Show more countries</button>
+					<button id="button-otherMetric" class="button-metric">Order by life expectancy</button>
+					<button id="button-otherChange" class="button-change">Order by years increased</button>
+				</div>
+				<svg id="svg-otherMetrics" style="width: 100%"></svg>
 			</div>
 		</div>
 	</div>
