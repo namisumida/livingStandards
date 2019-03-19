@@ -48,20 +48,22 @@
 			<div class="main-section" id="otherMetrics-section">
 				<p class="section-text">Some intro text</p>
 				<div id="button-metricsContainer">
-					<h5>Metrics</h5>
+					<h5 style="margin-bottom:10px">Metrics</h5>
 					<button class="button-otherMetrics" id="button-undernourished">Undernourished</button>
 					<button class="button-otherMetrics" id="button-under5">Under 5 mortality rate</button>
 					<button class="button-otherMetrics" id="button-maternal">Maternal mortality rate</button>
-					<button class="button-otherMetrics" id="button-healthExpense">Health expenditure</button>
-					<button class="button-otherMetrics" id="button-sanitationUrban">Sanitation (urban areas)</button>
-					<button class="button-otherMetrics" id="button-sanitationRural">Sanitation (rural areas)</button>
+					<button class="button-otherMetrics" id="button-sanitation">Access to sanitation services</button>
+					<button class="button-otherMetrics" id="button-electricity">Access to electricity</button>
 				</div>
-				<div class="button-container">
-					<button id="button-otherRadomize" class="button-randomize">Show more countries</button>
-					<button id="button-otherMetric" class="button-metric">Order by life expectancy</button>
-					<button id="button-otherChange" class="button-change">Order by years increased</button>
+				<div id="otherMetrics-chart">
+					<h4>% of population undernourished</h4>
+					<div class="button-container">
+						<button id="button-otherRandomize" class="button-randomize">Show more countries</button>
+						<button id="button-otherMetric" class="button-metric">Order by life expectancy</button>
+						<button id="button-otherChange" class="button-change">Order by years increased</button>
+					</div>
+					<svg id="svg-otherMetrics" style="width: 100%"></svg>
 				</div>
-				<svg id="svg-otherMetrics" style="width: 100%"></svg>
 			</div>
 		</div>
 	</div>

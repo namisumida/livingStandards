@@ -45,11 +45,11 @@ button {
   border-radius: 2px;
   height: 23px;
   font-weight: 500;
-  border: 1.5px solid;
+  border: 1px solid;
   cursor: pointer;
   margin: 1px;
-  margin-left: 20px;
-  margin-right: 20px; }
+  margin-left: 10px;
+  margin-right: 10px; }
 
 .section-text {
   margin-top: 40px;
@@ -198,10 +198,13 @@ ul {
   margin-bottom: 30px; }
 
 .button-otherMetrics {
-  margin-bottom: 10px; }
+  margin-bottom: 10px;
+  margin-left: 0;
+  margin-right: 0; }
 
 #button-undernourished {
-  width: 110px; }
+  width: 110px;
+  background-color: #FC5742; }
 
 #button-under5 {
   height: 36px;
@@ -214,13 +217,16 @@ ul {
 #button-healthExpense {
   width: 130px; }
 
-#button-sanitationUrban {
+#button-sanitation {
   height: 36px;
-  width: 110px; }
+  width: 130px; }
 
-#button-sanitationRural {
+#button-electricity {
   height: 36px;
-  width: 110px; }
+  width: 100px; }
+
+#otherMetrics-chart {
+  border-top: 1px solid; }
 
 #methods-wrapper {
   padding-top: 50px;

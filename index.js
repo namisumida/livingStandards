@@ -25,7 +25,7 @@ function init() {
   var h_svgTimeline = 500;
   var h_svgComp = 370;
   var h_svgComp_init = 70;
-  var h_svgOther = 600;
+  var h_svgOther = 630;
   document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
   document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp_init + "px";
@@ -392,58 +392,41 @@ function init() {
                            })
     // Other metrics - initial load is undernourished
     svg_otherMetrics.selectAll("lineMarkers")
-                     .data([23,3])
+                     .data([3,3])
                      .enter()
                      .append("line")
                      .attr("class", "lineMarkers_timeline")
                      .attr("x1", function(d) { return runDotScale("undernourished", d, "timeline"); })
                      .attr("x2", function(d) { return runDotScale("undernourished", d, "timeline"); })
                      .attr("y1", 20)
-                     .attr("y2", h_svgComp-35)
+                     .attr("y2", h_svgOther-35)
+                     .style("stroke", "none")
                      .style("opacity", function(d,i) {
                        if (i==0) { return 0.5; }
                        else { return 0.3; }
-                     })
-                     .style("stroke", function(d,i) {
-                       if (i==0) { return yellow; }
-                       else { return blue; }
                      });
     svg_otherMetrics.selectAll("lineMarkerLabels")
-                     .data([23,3])
+                     .data([3,3])
                      .enter()
                      .append("text")
                      .attr("class", "lineMarkerLabels")
                      .attr("x", function(d) { return runDotScale("undernourished", d, "timeline"); })
-                     .attr("y", h_svgComp-20)
+                     .attr("y", h_svgOther-20)
                      .text(function(d,i) {
-                       if (i==0) { return "2000 USA avg"; }
-                       else { return "2016 USA avg"}
+                       if (i==1) { return "US avg"; }
+                       else { return ""}
                      })
                      .call(wrap, 60)
-                     .style("fill", function(d,i) {
-                       if (i==0) { return yellow; }
-                       else { return blue; }
-                     });
-    svg_otherMetrics.selectAll("axisLabel")
-                     .data(["2000", "2016"])
-                     .enter()
-                     .append("text")
-                     .attr("class", "axisLabel")
-                     .text(function(d) { return d; })
-                     .attr("x", function(d,i) {
-                       if (i==0) { return runDotScale("undernourished", 3, "timeline"); }
-                       else { return runDotScale("undernourished", 3, "timeline"); }
-                     })
-                     .attr("y", 10);
+                     .style("fill", "none");
     svg_otherMetrics.selectAll("compAvgGroup")
-                     .data([{"country": "USA", "old": 3, "latest": 3}, {"country": "LDC", "old": 35, "latest": 3}])
+                     .data([{"country": "USA", "old": 3, "latest": 3}, {"country": "LDC", "old": 35, "latest": 23}])
                      .enter()
                      .append("g")
                      .attr("class", "compAvgGroup");
-/*    svg_otherMetrics.selectAll(".compAvgGroup")
+    svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("rect")
                      .attr("class", "timelineRect")
-                     .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline"); })
+                     .attr("x", function(d) { return runDotScale("undernourished", d.latest, "timeline"); })
                      .attr("y", function(d,i) {
                        if (i==1) { return 17 + (i*30); }
                        else { return 19 + (i*30); }
@@ -452,7 +435,7 @@ function init() {
                        if (i==1) { return 16; }
                        else { return 12; }
                      })
-                     .attr("width", function(d) { return runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline"); });
+                     .attr("width", function(d) { return runDotScale("undernourished", d.old, "timeline") - runDotScale("undernourished", d.latest, "timeline"); });
     svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("circle")
                      .attr("class", "timelineDots_old")
@@ -478,30 +461,18 @@ function init() {
                        if (i==0) { return "USA"; }
                        else { return "Least developed countries (avg)"; }
                      })
-                     .attr("x", function(d) {
-                       if (runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline") > 90) { return runDotScale("undernourished", d.old, "timeline") + 15; }
-                       else { return runDotScale("undernourished", d.old, "timeline") - 10; }
-                     })
+                     .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline") + 15; })
                      .attr("y", function(d,i) { return 29 + i*30; })
-                     .style("text-anchor", function(d) {
-                       if (runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline") > 90) { return "start"; }
-                       else { return "end"; }
-                     })
+                     .style("text-anchor", "start")
                      .style("font-weight", 800)
                      .style("font-size", "12px");
     svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("text")
                      .attr("class", "axisLabel")
-                     .text(function(d) { return Math.round(d.old); })
-                     .attr("x", function(d) {
-                       if (runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline") > 90) { return runDotScale("undernourished", d.old, "timeline")-15; }
-                       else { return runDotScale("undernourished", d.old, "timeline")+10; }
-                     })
+                     .text(function(d,i) { if (i==1) { return Math.round(d.old); } })
+                     .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline")-15; })
                      .attr("y", function(d,i) { return 29 + i*30; })
-                     .style("text-anchor", function(d) {
-                       if (runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline") > 90) { return "end"; }
-                       else { return "start"; }
-                     })
+                     .style("text-anchor", "end")
                      .style("fill", yellow);
     svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("text")
@@ -517,77 +488,80 @@ function init() {
                        else { return "end"; }
                      })
                      .style("fill", blue);
-  /*  var dataset_lifeExpectancyComp = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_latest) & d.ldc == 1; }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
-    var randomArray10 = randomGenerate(10, dataset_lifeExpectancyComp.length);
-    dataset_lifeExpectancyComp10 = dataset_lifeExpectancyComp.filter(function(d,i) { return randomArray10.includes(i); });
+    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d.undernourished_latest) & !isNaN(d.undernourished_old) & d.ldc == 1; }).sort(function(a,b) { return b.undernourished_latest - a.undernourished_latest; });
+    var randomArray10 = randomGenerate(20, dataset_otherMetrics.length);
+    dataset_otherMetrics20 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
     svg_otherMetrics.selectAll("compLDCgroup")
-                           .data(dataset_lifeExpectancyComp10)
-                           .enter()
-                           .append("g")
-                           .attr("class", "compGroup");
+                     .data(dataset_otherMetrics20)
+                     .enter()
+                     .append("g")
+                     .attr("class", "compGroup");
     svg_otherMetrics.selectAll(".compGroup")
-                           .append("rect")
-                           .attr("class", "timelineRect")
-                           .attr("x", function(d) { return runDotScale("undernourished", d.lifeExpectancy_old, "timeline"); })
-                           .attr("y", function(d,i) { return 70 + (i+1)*25; })
-                           .attr("height", 12);
+                     .append("rect")
+                     .attr("class", "timelineRect")
+                     .attr("x", function(d) { return runDotScale("undernourished", d.undernourished_old, "timeline"); })
+                     .attr("y", function(d,i) { return 69 + (i+1)*25; })
+                     .attr("height", 12);
     svg_otherMetrics.selectAll(".compGroup")
-                           .append("circle")
-                           .attr("class", "timelineDots")
-                           .attr("r", 7)
-                           .attr("cx", function(d) { return runDotScale("undernourished", d.lifeExpectancy_old, "timeline"); })
-                           .attr("cy", function(d,i) { return 75 + (i+1)*25; })
-                           .style("fill", "none");
+                     .append("circle")
+                     .attr("class", "timelineDots")
+                     .attr("r", 7)
+                     .attr("cx", function(d) { return runDotScale("undernourished", d.undernourished_old, "timeline"); })
+                     .attr("cy", function(d,i) { return 75 + (i+1)*25; })
+                     .style("fill", "none");
     svg_otherMetrics.selectAll(".compGroup")
-                           .append("circle")
-                           .attr("class", "timelineDots_old")
-                           .attr("r", 7)
-                           .attr("cx", runDotScale("undernourished", 40, "timeline"))
-                           .attr("cy", 55);
+                     .append("circle")
+                     .attr("class", "timelineDots_old")
+                     .attr("r", 7)
+                     .attr("cx", runDotScale("undernourished", 35, "timeline"))
+                     .attr("cy", 55);
     svg_otherMetrics.selectAll(".compGroup")
-                           .append("text")
-                           .attr("class", "timelineLabels")
-                           .attr("x", function(d) {
-                             if (runDotScale("undernourished", d.lifeExpectancy_latest, "timeline") - runDotScale("undernourished", d.lifeExpectancy_old, "timeline") > 90) { return runDotScale("undernourished", d.lifeExpectancy_old, "timeline") + 10; }
-                             else { return runDotScale("undernourished", d.lifeExpectancy_old, "timeline") - 10; }
-                           })
-                           .attr("y", function(d,i) { return 79 + (i+1)*25; })
-                           .style("text-anchor", function(d) {
-                             if (runDotScale("undernourished", d.lifeExpectancy_latest, "timeline") - runDotScale("undernourished", d.lifeExpectancy_old, "timeline") > 90) { return "start"; }
-                             else { return "end"; }
-                           });
+                     .append("text")
+                     .attr("class", "timelineLabels")
+                     .attr("x", function(d) {
+                       if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) { return runDotScale("undernourished", d.undernourished_old, "timeline") - 10; }
+                       else if (d.undernourished_old > d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
+                       else { return runDotScale("undernourished", d.undernourished_old, "timeline") - 15; } // if increased over time
+                     })
+                     .attr("y", function(d,i) { return 79 + (i+1)*25; })
+                     .style("text-anchor", function(d) {
+                       if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) { return "end"; }
+                       else if (d.undernourished_old > d.undernourished_latest) { return "start"; }
+                       else { return "end"; }
+                     });
     svg_otherMetrics.selectAll(".compGroup")
-                           .on("mouseover", function(d) {
-                             var currGroup = d3.select(this);
-                             currGroup.select(".timelineDots").style("fill", accentColor);
-                             currGroup.select(".timelineDots_old").style("fill", accentColor);
-                             currGroup.append("text")
-                                      .attr("class", "axisLabel")
-                                      .text(function(d) { return Math.round(d.lifeExpectancy_old); })
-                                      .attr("x", function(d) {
-                                        if (runDotScale("undernourished", d.lifeExpectancy_latest, "timeline") - runDotScale("undernourished", d.lifeExpectancy_old, "timeline") > 90) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
-                                        else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
-                                      })
-                                      .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                                      .style("text-anchor", function(d) {
-                                        if (runDotScale("undernourished", d.lifeExpectancy_latest, "timeline") - runDotScale("undernourished", d.lifeExpectancy_old, "timeline") > 90) { return "end"; }
-                                        else { return "start"; }
-                                      })
-                                      .style("fill", accentColor);
-                            currGroup.append("text")
-                                     .attr("class", "axisLabel")
-                                     .text(function(d) { return Math.round(d.lifeExpectancy_latest); })
-                                     .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
-                                     .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                                     .style("text-anchor", "start")
-                                     .style("fill", accentColor);
-                           })
-                           .on("mouseout", function() {
-                             var currGroup = d3.select(this);
-                             currGroup.select(".timelineDots").style("fill", blue);
-                             currGroup.select(".timelineDots_old").style("fill", yellow);
-                             currGroup.selectAll(".axisLabel").remove();
-                           })*/
+                     .on("mouseover", function(d) {
+                       var currGroup = d3.select(this);
+                       currGroup.select(".timelineDots").style("fill", accentColor);
+                       currGroup.select(".timelineDots_old").style("fill", accentColor);
+                       currGroup.append("text")
+                                .attr("class", "axisLabel")
+                                .text(function(d) { return Math.round(d.undernourished_old); })
+                                .attr("x", function(d) {
+                                  if (Math.abs(runDotScale("undernourished", d.undernourished_latest, "timeline") - runDotScale("undernourished", d.undernourished_old, "timeline")) > 90) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
+                                  else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
+                                })
+                                .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                                .style("text-anchor", function(d) {
+                                  if (Math.abs(runDotScale("undernourished", d.undernourished_latest, "timeline") - runDotScale("undernourished", d.undernourished_old, "timeline")) > 90) { return "end"; }
+                                  else { return "start"; }
+                                })
+                                .style("fill", accentColor);
+                      currGroup.append("text")
+                               .attr("class", "axisLabel")
+                               .text(function(d) { return Math.round(d.undernourished_latest); })
+                               .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
+                               .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                               .style("text-anchor", "start")
+                               .style("fill", accentColor);
+                     })
+                     .on("mouseout", function() {
+                       var currGroup = d3.select(this);
+                       currGroup.select(".timelineDots").style("fill", blue);
+                       currGroup.select(".timelineDots_old").style("fill", yellow);
+                       currGroup.selectAll(".axisLabel").remove();
+                     });
+  transitionLDC(svg_otherMetrics, "undernourished");
 
 
   }; // end setup
@@ -796,69 +770,161 @@ function init() {
                            })
                            .text(function(d) { return d.countryName; });
   }; // end updateLDC
-  function transitionLDC() {
-    document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineDots_old")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .duration(800)
-                           .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
-                           .attr("cy", function(d,i) { return 75 + (i+1)*25; });
-    svg_lifeExpectancy_comp.selectAll(".compGroup")
-                           .select(".timelineRect")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .delay(1000)
-                           .duration(1200)
-                           .attr("width", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); });
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineDots")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .delay(1000)
-                           .duration(1200)
-                           .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline"); })
-                           .style("fill", blue);
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineLabels")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .duration(1000)
-                           .delay(2500)
-                           .text(function(d) { return d.countryName; });
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select("#axisLabelOld")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .duration(1000)
-                           .delay(2500)
-                           .style("fill", yellow);
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select("#axisLabelLatest")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .duration(1000)
-                           .delay(2500)
-                           .style("fill", blue);
-    svg_lifeExpectancy_comp.selectAll(".lineMarkers_timeline")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .duration(1000)
-                           .delay(2800)
-                           .style("stroke", function(d,i) {
-                             if (i==0) { return yellow; }
-                             else { return blue; }
-                           });
-    svg_lifeExpectancy_comp.selectAll(".lineMarkerLabels")
-                           .transition()
-                           .ease(d3.easeLinear)
-                           .duration(1000)
-                           .delay(2800)
-                           .style("fill", function(d,i) {
-                             if (i==0) { return yellow; }
-                             else { return blue; }
-                           });
-    d3.select("#button-LDCchange").style("display", "inline");
-    d3.select("#button-LDCmetric").style("display", "inline").style("background-color", accentColor);
-    d3.select("#button-LDCrandomize").style("display", "inline");
-    d3.select("#button-showLDC").style("display", "none");
+  function transitionLDC(svg, metric) {
+    var variableOld = metric+"_old";
+    var variableLatest = metric+"_latest";
+    svg.selectAll(".compGroup").select(".timelineDots_old")
+       .transition()
+       .ease(d3.easeLinear)
+       .duration(800)
+       .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
+       .attr("cy", function(d,i) { return 75 + (i+1)*25; });
+    svg.selectAll(".compGroup")
+       .select(".timelineRect")
+       .transition()
+       .ease(d3.easeLinear)
+       .delay(1000)
+       .duration(1200)
+       .attr("width", function(d) { return Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")); })
+       .attr("x", function(d) {
+         if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+           if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableLatest], "timeline"); }
+           else { return runDotScale(metric, d[variableOld], "timeline"); }
+         }
+         else { return runDotScale(metric, d[variableOld], "timeline"); }
+       })
+       .style("fill", function(d) {
+         if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+           if (d[variableOld] > d[variableLatest]) { return blue; }
+           else { return "red"; }
+         }
+         else {
+           if (d[variableLatest] > d[variableOld]) { return blue; }
+           else { return "red"; }
+         }
+       });
+    svg.selectAll(".compGroup").select(".timelineDots")
+       .transition()
+       .ease(d3.easeLinear)
+       .delay(1000)
+       .duration(1200)
+       .attr("cx", function(d) { return runDotScale(metric, d[variableLatest], "timeline"); })
+       .style("fill", blue);
+    svg.selectAll(".compGroup").select(".timelineLabels")
+       .transition()
+       .ease(d3.easeLinear)
+       .duration(1000)
+       .delay(2500)
+       .text(function(d) { return d.countryName; });
+    svg.selectAll(".compGroup").select("#axisLabelOld")
+       .transition()
+       .ease(d3.easeLinear)
+       .duration(1000)
+       .delay(2500)
+       .style("fill", yellow);
+    svg.selectAll(".compGroup").select("#axisLabelLatest")
+       .transition()
+       .ease(d3.easeLinear)
+       .duration(1000)
+       .delay(2500)
+       .style("fill", blue);
+    svg.selectAll(".lineMarkers_timeline")
+       .transition()
+       .ease(d3.easeLinear)
+       .duration(1000)
+       .delay(2800)
+       .style("stroke", function(d,i) {
+         if (i==0) { return yellow; }
+         else { return blue; }
+       });
+    svg.selectAll(".lineMarkerLabels")
+       .transition()
+       .ease(d3.easeLinear)
+       .duration(1000)
+       .delay(2800)
+       .style("fill", function(d,i) {
+         if (i==0) { return yellow; }
+         else { return blue; }
+       });
   }; // end transitionLDC
+  function updateOtherMetrics(type, metric) {
+    var variableOld = metric+"_old";
+    var variableLatest = metric+"_latest";
+    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; }).sort(function(a,b) { return b[variableLatest] - a[variableLatest]; });
+    if (type=="randomize") {
+      var randomArray10 = randomGenerate(20, dataset_otherMetrics.length);
+      dataset_otherMetrics20 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
+      if (sort == "metric") { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+      else { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }) };
+      svg_lifeExpectancy_comp.selectAll(".compGroup")
+                             .data(dataset_otherMetrics20);
+    }
+    else if (type=="sortChange") {
+      sort = "change";
+      svg_lifeExpectancy_comp.selectAll(".compGroup")
+                             .data(dataset_otherMetrics20.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }));
+      d3.select("#button-otherMetric").style("background-color", backgroundGray);
+      d3.select("#button-otherChange").style("background-color", accentColor);
+    }
+    else {
+      sort = "metric";
+      d3.select("#button-otherMetric").style("background-color", accentColor);
+      d3.select("#button-otherChange").style("background-color", backgroundGray);
+      svg_lifeExpectancy_comp.selectAll(".compGroup")
+                             .data(dataset_otherMetrics20.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }));
+    };
+    svg_otherMetrics.selectAll("compLDCgroup")
+                     .data(dataset_otherMetrics20);
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
+                     .attr("x", function(d) { return runDotScale(metric, d[variableOld], "timeline"); });
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineDots")
+                     .attr("cx", function(d) { return runDotScale(metric, d.undernourished_old, "timeline"); });
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
+                     .attr("cx", runDotScale(metric, 35, "timeline"));
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
+                     .attr("x", function(d) {
+                       if (Math.abs(runDotScale(metric, d[variableOld], "timeline") - runDotScale(metric, d[variableLatest], "timeline")) > 90) { return runDotScale(metric, d[variableOld], "timeline") - 10; }
+                       else if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "timeline") + 15; }
+                       else { return runDotScale(metric, d[variableOld], "timeline") - 15; } // if increased over time
+                     })
+                     .style("text-anchor", function(d) {
+                       if (Math.abs(runDotScale(metric, d[variableOld], "timeline") - runDotScale(metric, d[variableLatest], "timeline")) > 90) { return "end"; }
+                       else if (d[variableOld] > d[variableLatest]) { return "start"; }
+                       else { return "end"; }
+                     });
+    svg_otherMetrics.selectAll(".compGroup")
+                     .on("mouseover", function(d) {
+                       var currGroup = d3.select(this);
+                       currGroup.select(".timelineDots").style("fill", accentColor);
+                       currGroup.select(".timelineDots_old").style("fill", accentColor);
+                       currGroup.append("text")
+                                .attr("class", "axisLabel")
+                                .text(function(d) { return Math.round(d[variableOld]); })
+                                .attr("x", function(d) {
+                                  if (Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")) > 90) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
+                                  else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
+                                })
+                                .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                                .style("text-anchor", function(d) {
+                                  if (Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")) > 90) { return "end"; }
+                                  else { return "start"; }
+                                })
+                                .style("fill", accentColor);
+                      currGroup.append("text")
+                               .attr("class", "axisLabel")
+                               .text(function(d) { return Math.round(d[variableLatest]); })
+                               .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
+                               .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                               .style("text-anchor", "start")
+                               .style("fill", accentColor);
+                     })
+                     .on("mouseout", function() {
+                       var currGroup = d3.select(this);
+                       currGroup.select(".timelineDots").style("fill", blue);
+                       currGroup.select(".timelineDots_old").style("fill", yellow);
+                       currGroup.selectAll(".axisLabel").remove();
+                     });
+  };
   reset();
   setup();
 
@@ -880,7 +946,12 @@ function init() {
   // LDC BUTTONS
   // Show specific least developed countries
   d3.select("#button-showLDC").on("click", function() {
-    transitionLDC();
+    document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp+"px";
+    transitionLDC(svg_lifeExpectancy_comp, "lifeExpectancy");
+    d3.select("#button-LDCchange").style("display", "inline");
+    d3.select("#button-LDCmetric").style("display", "inline").style("background-color", accentColor);
+    d3.select("#button-LDCrandomize").style("display", "inline");
+    d3.select("#button-showLDC").style("display", "none");
   });
   // Randomize 10
   d3.select("#button-LDCrandomize").on("click", function() {
@@ -909,6 +980,13 @@ function init() {
       }
     })
   }; // end for loop
+
+  // Other metrics buttons
+  // Show more LDCs
+  d3.select("#button-otherRandomize").on("click", function() {
+    console.log("clicked");
+    updateOtherMetrics("randomize");
+  });
 }; // end init
 ////////////////////////////////////////////////////////////////////////////////
 function rowConverter(d) {
