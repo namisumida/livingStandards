@@ -95,9 +95,6 @@ button {
   font-size: 13px;
   text-anchor: middle; }
 
-.timelineGroup {
-  cursor: pointer; }
-
 .axisLabel {
   font-size: 11px;
   text-anchor: middle; }
@@ -130,7 +127,10 @@ button {
   margin: auto;
   margin-bottom: 30px; }
 
-.button-metric {
+#button-worldMetric {
+  background-color: #FC5742; }
+
+#button-compMetric {
   background-color: #FC5742; }
 
 .compGroup {

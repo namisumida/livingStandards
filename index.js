@@ -5,8 +5,10 @@ function init() {
   var svg_lifeExpectancy_comp = d3.select("#svg-lifeExpectancy_comp");
   var svg_otherMetrics = d3.select("#svg-otherMetrics");
   // Dataset
-  var random_lifeExpectancy, dataset_lifeExpectancyComp10;
-  var sort, currOtherMetric;
+  var dataset_randomSubset;
+  var dataset_metric; // dataset that holds countries that qualify for currMetric;
+  var dataset_randomSubset; // dataset that holds random set of countries that will be displayed
+  var sort, currMetric;
   // Margins
   var w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
   var marginLeft = 10;
@@ -37,11 +39,14 @@ function init() {
   var accentColor = d3.color("#FC5742");
   var lightBlue = d3.color("#BACFDA");
   var yellow = d3.color("#E2CA84");
+  var red = d3.color("#FE707C");
 
   ////////////////////////////////////////////////////////////////////////////////
   function setup() {
     // LIFE EXPECTANCY
+    currMetric = "lifeExpectancy";
     // Topline; all countries
+    dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_old) & !isNaN(d.lifeExpectancy_latest); });
     var lifeExpectancy_highlights = [d3.min(dataset_countries, function(d) { return d.lifeExpectancy_latest; }), d3.max(dataset_countries, function(d) { return d.lifeExpectancy_latest; }), 72];
     svg_lifeExpectancy_topline.selectAll("toplineDots")
                                .data(dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_latest); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }))
@@ -77,9 +82,8 @@ function init() {
                                })
                                .call(wrap, 70);
     // Timeline; random set of countries
-    var dataset_lifeExpectancy20 = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_old); })
-    var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
-    random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
+    var randomArray = randomGenerate(20, dataset_metric.length);
+    dataset_randomWorldSubset = dataset_metric.filter(function(d,i) { return randomArray.includes(i); }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
     svg_lifeExpectancy_timeline.selectAll("lineMarkers")
                                .data([63,72])
                                .enter()
@@ -113,31 +117,31 @@ function init() {
                                  if (i==0) { return yellow; }
                                  else { return blue; }
                                });
-    svg_lifeExpectancy_timeline.selectAll("timelineGroup")
-                               .data(random_lifeExpectancy)
+    svg_lifeExpectancy_timeline.selectAll("compGroup")
+                               .data(dataset_randomWorldSubset)
                                .enter()
                                .append("g")
-                               .attr("class", "timelineGroup");
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+                               .attr("class", "compGroup");
+    svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                .append("rect")
                                .attr("class", "timelineRect")
                                .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
                                .attr("y", function(d,i) { return 19 + (i*22); })
                                .attr("height", 12)
                                .attr("width", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); });
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+    svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                .append("circle")
                                .attr("class", "timelineDots_old")
                                .attr("r", 7)
                                .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
                                .attr("cy", function(d,i) { return 25 + (i*22); });
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+    svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                 .append("circle")
                                 .attr("class", "timelineDots")
                                 .attr("r", 7)
                                 .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); })
                                 .attr("cy", function(d,i) { return 25 + (i*22); });
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+    svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                .append("text")
                                .attr("class", "timelineLabels")
                                .text(function(d) {
@@ -159,14 +163,15 @@ function init() {
                                .enter()
                                .append("text")
                                .attr("class", "axisLabel")
+                               .attr("id", "axisLabelYear")
                                .text(function(d) { return d; })
                                .attr("x", function(d,i) {
-                                 if (i==0) { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_old, "timeline"); }
-                                 else { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_latest, "timeline"); }
+                                 if (i==0) { return runDotScale("lifeExpectancy", dataset_randomWorldSubset[0].lifeExpectancy_old, "timeline"); }
+                                 else { return runDotScale("lifeExpectancy", dataset_randomWorldSubset[0].lifeExpectancy_latest, "timeline"); }
                                })
                                .attr("y", 10);
     // on mouseover
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
+    svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                .on("mouseover", function(d) {
                                  var currGroup = d3.select(this);
                                  currGroup.select(".timelineDots").style("fill", accentColor);
@@ -237,6 +242,7 @@ function init() {
                            .enter()
                            .append("text")
                            .attr("class", "axisLabel")
+                           .attr("id", "axisLabelYear")
                            .text(function(d) { return d; })
                            .attr("x", function(d,i) {
                              if (i==0) { return runDotScale("lifeExpectancy", 70, "timeline"); }
@@ -325,11 +331,11 @@ function init() {
                              else { return "end"; }
                            })
                            .style("fill", blue);
-    var dataset_lifeExpectancyComp = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_latest) & d.ldc == 1; }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
-    var randomArray10 = randomGenerate(10, dataset_lifeExpectancyComp.length);
-    dataset_lifeExpectancyComp10 = dataset_lifeExpectancyComp.filter(function(d,i) { return randomArray10.includes(i); });
+    var dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_latest) & d.ldc == 1; }).sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; });
+    var randomArray10 = randomGenerate(10, dataset_metric.length);
+    dataset_randomCompSubset = dataset_metric.filter(function(d,i) { return randomArray10.includes(i); });
     svg_lifeExpectancy_comp.selectAll("compLDCgroup")
-                           .data(dataset_lifeExpectancyComp10)
+                           .data(dataset_randomCompSubset)
                            .enter()
                            .append("g")
                            .attr("class", "compGroup");
@@ -343,8 +349,8 @@ function init() {
                              return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline");
                            })
                            .style("fill", function(d) {
-                             if (d.lifeExpectancy_latest > d.lifeExpectancy_old) { return blue; }
-                             else { return "red"; }
+                             if (d.lifeExpectancy_latest > d.lifeExpectancy_old) { return lightBlue; }
+                             else { return red; }
                            });
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("circle")
@@ -508,11 +514,11 @@ function init() {
                        else { return "end"; }
                      })
                      .style("fill", blue);
-    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d.undernourished_latest) & !isNaN(d.undernourished_old) & d.ldc == 1; }).sort(function(a,b) { return a.undernourished_latest - b.undernourished_latest; });
-    var randomArray10 = randomGenerate(15, dataset_otherMetrics.length);
-    dataset_otherMetrics15 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
+    var dataset_metrics = dataset_countries.filter(function(d) { return !isNaN(d.undernourished_latest) & !isNaN(d.undernourished_old) & d.ldc == 1; }).sort(function(a,b) { return a.undernourished_latest - b.undernourished_latest; });
+    var randomArray10 = randomGenerate(15, dataset_metrics.length);
+    dataset_randomOtherSubset = dataset_metrics.filter(function(d,i) { return randomArray10.includes(i); });
     svg_otherMetrics.selectAll("compLDCgroup")
-                     .data(dataset_otherMetrics15)
+                     .data(dataset_randomOtherSubset)
                      .enter()
                      .append("g")
                      .attr("class", "compGroup");
@@ -604,10 +610,11 @@ function init() {
                        currGroup.select(".timelineDots_old").style("fill", yellow);
                        currGroup.selectAll(".axisLabel").remove();
                      });
+
   }; // end setup
   function reset() {
     sort = "metric";
-    currOtherMetric = "undernourished";
+    currMetric = "undernourished";
   }; // end reset function
   function resize() {
   }; // end resize function
@@ -700,108 +707,109 @@ function init() {
     }
     return array;
   }; // end randomGenerate
-  function updateTimeline(type) {
-    var dataset_lifeExpectancy20 = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_old); });
-    if (type=="randomize") {
-      var randomArray = randomGenerate(20, dataset_lifeExpectancy20.length);
-      random_lifeExpectancy = dataset_lifeExpectancy20.filter(function(d,i) { return randomArray.includes(i); });
-      if (sort == "metric") { random_lifeExpectancy = random_lifeExpectancy.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }) }
-      else { random_lifeExpectancy = random_lifeExpectancy.sort(function(a,b) { return (b.lifeExpectancy_latest-b.lifeExpectancy_old) - (a.lifeExpectancy_latest-a.lifeExpectancy_old); }) };
-      svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                                 .data(random_lifeExpectancy);
+  function updateView(svg, type, svgID) {
+    // Affects 3 different SVGs: 1) Life expectancy around the world;  2) Life expectancies in the US and LDCs; 3) Other living standards
+    var variableOld = currMetric + "_old";
+    var variableLatest = currMetric + "_latest";
+    // Three types of interactions/changes that all lead to updating the dots: 1) Showing another set of countries
+    if (svgID==1) { // world view
+      if (type == "sortChange") {
+        sort = "change";
+        svg.selectAll(".compGroup").data(dataset_randomWorldSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }));
+      }
+      else if (type == "sortMetric") {
+        sort = "metric";
+        svg.selectAll(".compGroup").data(dataset_randomWorldSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }));
+      }
+      else { // randomize
+        dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d[variableOld]) & !isNaN(d[variableLatest]); });
+        var randomArray = randomGenerate(20, dataset_metric.length);
+        dataset_randomWorldSubset = dataset_metric.filter(function(d,i) { return randomArray.includes(i); });
+        // Sort appropriately
+        if (sort == "metric") { dataset_randomWorldSubset = dataset_randomWorldSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+        else { dataset_randomWorldSubset = dataset_randomWorldSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }) };
+        // Set new data to groups
+        svg.selectAll(".compGroup").data(dataset_randomWorldSubset);
+      }
     }
-    else if (type=="sortChange") {
-      sort = "change";
-      svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                                 .data(random_lifeExpectancy.sort(function(a,b) { return (b.lifeExpectancy_latest-b.lifeExpectancy_old) - (a.lifeExpectancy_latest-a.lifeExpectancy_old); }));
-      d3.select("#button-timelineMetric").style("background-color", backgroundGray);
-      d3.select("#button-timelineChange").style("background-color", accentColor);
-    }
-    else {
-      sort = "metric";
-      svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                                 .data(random_lifeExpectancy.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }))
-      d3.select("#button-timelineChange").style("background-color", backgroundGray);
-      d3.select("#button-timelineMetric").style("background-color", accentColor);
-    }
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                               .select(".timelineRect")
-                               .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
-                               .attr("width", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                               .select(".timelineDots_old")
-                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); });
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                               .select(".timelineDots")
-                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline"); });
-    svg_lifeExpectancy_timeline.selectAll(".timelineGroup")
-                               .select(".timelineLabels")
-                               .text(function(d) {
-                                 if (d.countryName == "Federated States of Micronesia") { return "Micronesia"; }
-                                 else if (d.countryName == "St. Vincent and the Grenadines") { return "St. Vincent & Grenadines"; }
-                                 else { return d.countryName; }
-                               })
-                               .attr("x", function(d) {
-                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 90) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") + 10; }
-                                 else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") - 10; }
-                               })
-                               .style("text-anchor", function(d) {
-                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 90) { return "start"; }
-                                 else { return "end"; }
-                               });
-    svg_lifeExpectancy_timeline.selectAll(".axisLabel")
-                               .attr("x", function(d,i) {
-                                 if (i==0) { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_old, "timeline"); }
-                                 else { return runDotScale("lifeExpectancy", random_lifeExpectancy[0].lifeExpectancy_latest, "timeline"); }
-                               });
-  }; // end updateTimeline
-  function updateLDC(type) {
-    var dataset_lifeExpectancyComp = dataset_countries.filter(function(d) { return !isNaN(d.lifeExpectancy_latest) & d.ldc == 1; });
-    if (type=="randomize") {
-      var randomArray10 = randomGenerate(10, dataset_lifeExpectancyComp.length);
-      dataset_lifeExpectancyComp10 = dataset_lifeExpectancyComp.filter(function(d,i) { return randomArray10.includes(i); });
-      if (sort == "metric") { dataset_lifeExpectancyComp10 = dataset_lifeExpectancyComp10.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }) }
-      else { dataset_lifeExpectancyComp10 = dataset_lifeExpectancyComp10.sort(function(a,b) { return (b.lifeExpectancy_latest-b.lifeExpectancy_old) - (a.lifeExpectancy_latest-a.lifeExpectancy_old); }) };
-      svg_lifeExpectancy_comp.selectAll(".compGroup")
-                             .data(dataset_lifeExpectancyComp10);
-    }
-    else if (type=="sortChange") {
-      sort = "change";
-      svg_lifeExpectancy_comp.selectAll(".compGroup")
-                             .data(dataset_lifeExpectancyComp10.sort(function(a,b) { return (b.lifeExpectancy_latest-b.lifeExpectancy_old) - (a.lifeExpectancy_latest-a.lifeExpectancy_old); }));
-      d3.select("#button-LDCmetric").style("background-color", backgroundGray);
-      d3.select("#button-LDCchange").style("background-color", accentColor);
+    else if (svgID==2) {
+      dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d[variableOld]) & !isNaN(d[variableLatest]) & d.ldc == 1; });
+      if (type == "sortChange") {
+        sort = "change";
+        svg.selectAll(".compGroup").data(dataset_randomCompSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }));
+        dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d[variableOld]) & !isNaN(d[variableLatest]) & d.ldc == 1; });
+      }
+      else if (type == "sortMetric") {
+        sort = "metric";
+        svg.selectAll(".compGroup").data(dataset_randomCompSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }));
+      }
+      else { // randomize
+        var randomArray = randomGenerate(10, dataset_metric.length);
+        dataset_randomCompSubset = dataset_metric.filter(function(d,i) { return randomArray.includes(i); });
+        if (sort == "metric") { dataset_randomCompSubset = dataset_randomCompSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+        else { dataset_randomCompSubset = dataset_randomCompSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }) };
+        // Set new data to groups
+        svg.selectAll(".compGroup").data(dataset_randomCompSubset);
+      }
     }
     else {
-      sort = "metric";
-      d3.select("#button-LDCmetric").style("background-color", accentColor);
-      d3.select("#button-LDCchange").style("background-color", backgroundGray);
-      svg_lifeExpectancy_comp.selectAll(".compGroup")
-                             .data(dataset_lifeExpectancyComp10.sort(function(a,b) { return b.lifeExpectancy_latest - a.lifeExpectancy_latest; }));
+      if (type == "sortChange") {
+        sort = "change";
+        svg.selectAll(".compGroup").data(dataset_randomOtherSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }));
+      }
+      else if (type == "sortMetric") {
+        sort = "metric";
+        svg.selectAll(".compGroup").data(dataset_randomOtherSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }));
+      }
+      else { // randomize
+        var randomArray = randomGenerate(15, dataset_metric.length);
+        dataset_randomOtherSubset = dataset_metric.filter(function(d,i) { return randomArray.includes(i); });
+        if (sort == "metric") { dataset_randomCompSubset = dataset_randomCompSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+        else { dataset_randomOtherSubset = dataset_randomOtherSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }) };
+        // Set new data to groups
+        svg.selectAll(".compGroup").data(dataset_randomOtherSubset);
+      }
+    }
+
+    // Update elements
+    svg.selectAll(".compGroup")
+       .select(".timelineRect")
+       .attr("x", function(d) { return runDotScale("lifeExpectancy", d[variableOld], "timeline"); })
+       .attr("width", function(d) { return runDotScale("lifeExpectancy", d[variableLatest], "timeline") - runDotScale("lifeExpectancy", d[variableOld], "timeline"); })
+    svg.selectAll(".compGroup")
+       .select(".timelineDots_old")
+       .attr("cx", function(d) { return runDotScale("lifeExpectancy", d[variableOld], "timeline"); });
+    svg.selectAll(".compGroup")
+       .select(".timelineDots")
+       .attr("cx", function(d) { return runDotScale("lifeExpectancy", d[variableLatest], "timeline"); });
+    svg.selectAll(".compGroup")
+       .select(".timelineLabels")
+       .text(function(d) {
+         if (d.countryName == "Federated States of Micronesia") { return "Micronesia"; }
+         else if (d.countryName == "St. Vincent and the Grenadines") { return "St. Vincent & Grenadines"; }
+         else { return d.countryName; }
+       })
+       .attr("x", function(d) {
+         if (runDotScale("lifeExpectancy", d[variableLatest], "timeline") - runDotScale("lifeExpectancy", d[variableOld], "timeline") > 90) { return runDotScale("lifeExpectancy", d[variableOld], "timeline") + 10; }
+         else { return runDotScale("lifeExpectancy", d[variableOld], "timeline") - 10; }
+       })
+       .style("text-anchor", function(d) {
+         if (runDotScale("lifeExpectancy", d[variableLatest], "timeline") - runDotScale("lifeExpectancy", d[variableOld], "timeline") > 90) { return "start"; }
+         else { return "end"; }
+       });
+    if (svgID==1) {
+      svg.selectAll("#axisLabelYear")
+         .attr("x", function(d,i) {
+           if (i==0) { return runDotScale("lifeExpectancy", dataset_randomWorldSubset[0][variableOld], "timeline"); }
+           else { return runDotScale("lifeExpectancy", dataset_randomWorldSubset[0][variableLatest], "timeline"); }
+         });
     };
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineRect")
-                           .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
-                           .attr("y", function(d,i) { return 60 + (i+1)*25; })
-                           .attr("width", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); });
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineDots")
-                           .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline"); })
-                           .attr("cy", function(d,i) { return 65 + (i+1)*25; });
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineDots_old")
-                           .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
-                           .attr("cy", function(d,i) { return 65 + (i+1)*25; })
-    svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineLabels")
-                           .attr("x", function(d) {
-                             if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 90) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") + 10; }
-                             else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") - 10; }
-                           })
-                           .attr("y", function(d,i) { return 69 + (i+1)*25; })
-                           .style("text-anchor", function(d) {
-                             if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 90) { return "start"; }
-                             else { return "end"; }
-                           })
-                           .text(function(d) { return d.countryName; });
-  }; // end updateLDC
-  function transitionLDC(svg, metric) {
+
+  }; // end updateViews
+
+
+
+  function showLDC(svg, metric) { // show LDC countries
     var variableOld = metric+"_old";
     var variableLatest = metric+"_latest";
     svg.selectAll(".compGroup").select(".timelineDots_old")
@@ -810,8 +818,7 @@ function init() {
        .duration(800)
        .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
        .attr("cy", function(d,i) { return 70 + (i+1)*25; });
-    svg.selectAll(".compGroup")
-       .select(".timelineRect")
+    svg.selectAll(".compGroup").select(".timelineRect")
        .transition()
        .ease(d3.easeLinear)
        .delay(1000)
@@ -826,12 +833,12 @@ function init() {
        })
        .style("fill", function(d) {
          if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
-           if (d[variableOld] > d[variableLatest]) { return blue; }
-           else { return "red"; }
+           if (d[variableOld] > d[variableLatest]) { return lightBlue; }
+           else { return red; }
          }
          else {
-           if (d[variableLatest] > d[variableOld]) { return blue; }
-           else { return "red"; }
+           if (d[variableLatest] > d[variableOld]) { return lightBlue; }
+           else { return red; }
          }
        });
     svg.selectAll(".compGroup").select(".timelineDots")
@@ -846,7 +853,8 @@ function init() {
        .ease(d3.easeLinear)
        .duration(1000)
        .delay(2500)
-       .text(function(d) { return d.countryName; });
+       .text(function(d) { return d.countryName; })
+       .style("fill", "black");
     svg.selectAll(".lineMarkers_timeline")
        .transition()
        .ease(d3.easeLinear)
@@ -865,28 +873,25 @@ function init() {
          if (i==0) { return yellow; }
          else { return blue; }
        });
-  }; // end transitionLDC
-  function updateOtherMetricsView(type, metric) {
-    var variableOld = metric+"_old";
-    var variableLatest = metric+"_latest";
-    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; }).sort(function(a,b) { return b[variableLatest] - a[variableLatest]; });
+  }; // end showLDC
+  /*function updateLDCView(svg, type) { // randomize, change sort
+    var variableOld = currMetric+"_old";
+    var variableLatest = currMetric+"_latest";
+    dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; }).sort(function(a,b) { return b[variableLatest] - a[variableLatest]; });
     if (type=="randomize") {
-      var randomArray10 = randomGenerate(20, dataset_otherMetrics.length);
-      dataset_otherMetrics15 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
+      var randomArray10 = randomGenerate(15, dataset_metric.length);
+      dataset_randomSubset = dataset_metric.filter(function(d,i) { return randomArray10.includes(i); });
       if (sort == "metric") {
-        if (metric == "undernourished" | metric == "under5" | metric == "maternal") {
-          dataset_otherMetrics15 = dataset_otherMetrics15.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; })
-        }
-        else { dataset_otherMetrics15 = dataset_otherMetrics15.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+        if (currMetric == "undernourished" | currMetric == "under5" | currMetric == "maternal") { dataset_randomSubset = dataset_randomSubset.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; }) }
+        else { dataset_randomSubset = dataset_randomSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
       }
-      else { dataset_otherMetrics15 = dataset_otherMetrics15.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }) };
-      svg_otherMetrics.selectAll(".compGroup")
-                      .data(dataset_otherMetrics15);
+      else { dataset_randomSubset = dataset_randomSubset.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }) };
+      svg.selectAll(".compGroup").data(dataset_randomSubset);
     }
     else if (type=="sortChange") {
       sort = "change";
-      svg_otherMetrics.selectAll(".compGroup")
-                      .data(dataset_otherMetrics15.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }));
+      svg.selectAll(".compGroup")
+         .data(dataset_randomSubset.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }));
       d3.select("#button-otherMetric").style("background-color", backgroundGray);
       d3.select("#button-otherChange").style("background-color", accentColor);
     }
@@ -894,52 +899,53 @@ function init() {
       sort = "metric";
       d3.select("#button-otherMetric").style("background-color", accentColor);
       d3.select("#button-otherChange").style("background-color", backgroundGray);
-      svg_otherMetrics.selectAll(".compGroup")
-                      .data(dataset_otherMetrics15.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; }));
+      svg.selectAll(".compGroup")
+         .data(dataset_randomSubset.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; }));
     };
-    svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
-                    .attr("x", function(d) {
-                      if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
-                        if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableLatest], "timeline"); }
-                        else { return runDotScale(metric, d[variableOld], "timeline"); }
-                      }
-                      else { return runDotScale(metric, d[variableOld], "timeline"); }
-                    })
-                    .attr("width", function(d) { return Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")); })
-                    .style("fill", function(d) {
-                      if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
-                        if (d[variableOld] > d[variableLatest]) { return blue; }
-                        else { return "red"; }
-                      }
-                      else {
-                        if (d[variableLatest] > d[variableOld]) { return blue; }
-                        else { return "red"; }
-                      }
-                    });
-    svg_otherMetrics.selectAll(".compGroup").select(".timelineDots")
-                    .attr("cx", function(d) { return runDotScale(metric, d[variableLatest], "timeline"); });
-    svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
-                    .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
-    svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
-                    .text(function(d) { return d.countryName; })
-                    .attr("x", function(d) {
-                      // if it doesn't fit into rect
-                      if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90)
-                       if (d.undernourished_old > d.undernourished_latest){ return runDotScale("undernourished", d.undernourished_old, "timeline") - 10; }
-                       else { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
-                      else if (d.undernourished_old > d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
-                      else { return runDotScale("undernourished", d.undernourished_old, "timeline") - 15; } // if increased over time
-                    })
-                    .style("text-anchor", function(d) {
-                      if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) {
-                        if (d.undernourished_old > d.undernourished_latest) { return "end"; }
-                        else { return "start"; }
-                      }
-                      else if (d.undernourished_old > d.undernourished_latest) { return "start"; }
-                      else { return "end"; }
-                    });
-  }; // end updateOtherMetricsView
-  function updateOtherMetricsMetric(metric) {
+    svg.selectAll(".compGroup").select(".timelineRect")
+        .attr("x", function(d) {
+          if (currMetric=="undernourished" | currMetric=="under5" | currMetric=="maternal") {
+            if (d[variableOld] > d[variableLatest]) { return runDotScale(currMetric, d[variableLatest], "timeline"); }
+            else { return runDotScale(currMetric, d[variableOld], "timeline"); }
+          }
+          else { return runDotScale(currMetric, d[variableOld], "timeline"); }
+        })
+        .attr("width", function(d) { return Math.abs(runDotScale(currMetric, d[variableLatest], "timeline") - runDotScale(currMetric, d[variableOld], "timeline")); })
+        .style("fill", function(d) {
+          if (currMetric=="undernourished" | currMetric=="under5" | currMetric=="maternal") {
+            if (d[variableOld] > d[variableLatest]) { return lightBlue; }
+            else { return red; }
+          }
+          else {
+            if (d[variableLatest] > d[variableOld]) { return lightBlue; }
+            else { return red; }
+          }
+        });
+    svg.selectAll(".compGroup").select(".timelineDots")
+       .attr("cx", function(d) { return runDotScale(currMetric, d[variableLatest], "timeline"); });
+    svg.selectAll(".compGroup").select(".timelineDots_old")
+       .attr("cx", function(d) { return runDotScale(currMetric, d[variableOld], "timeline"); })
+    svg.selectAll(".compGroup").select(".timelineLabels")
+        .text(function(d) { return d.countryName; })
+        .attr("x", function(d) {
+          // if it doesn't fit into rect
+          if (Math.abs(runDotScale(currMetric, d[variableOld], "timeline") - runDotScale(currMetric, d[variableLatest], "timeline")) > 90)
+           if (d[variableOld] > d[variableLatest]){ return runDotScale(metric, d[variableOld], "timeline") - 10; }
+           else { return runDotScale(currMetric, d[variableOld], "timeline") + 15; }
+          else if (d[variableOld] > d[variableLatest]) { return runDotScale(currMetric, d[variableOld], "timeline") + 15; }
+          else { return runDotScale(currMetric, d[variableOld], "timeline") - 15; } // if increased over time
+        })
+        .style("text-anchor", function(d) {
+          if (Math.abs(runDotScale(currMetric, d[variableOld], "timeline") - runDotScale(currMetric, d[variableLatest], "timeline")) > 90) {
+            if (d[variableOld] > d[variableLatest]) { return "end"; }
+            else { return "start"; }
+          }
+          else if (d[variableOld] > d[variableLatest]) { return "start"; }
+          else { return "end"; }
+        });
+  }; // end updateLDCView*/
+  function changeMetric(metric) { // change to a different metric
+    d3.selectAll(".button-otherMetrics").style("background-color", "transparent"); // make all buttons transparent
     var variableOld = metric+"_old";
     var variableLatest = metric+"_latest";
     if (metric=="undernourished") {
@@ -974,15 +980,14 @@ function init() {
                      .text("US avg")
                      .call(wrap, 60)
                      .style("fill", "none");
-    svg_otherMetrics.selectAll(".compAvgGroup")
-                     .data(dataset_compAvg);
+    svg_otherMetrics.selectAll(".compAvgGroup").data(dataset_compAvg);
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineRect")
                      .attr("x", function(d) { return runDotScale(metric, d.latest, "timeline"); })
                      .attr("width", function(d) { return Math.abs(runDotScale(metric, d.old, "timeline") - runDotScale(metric, d.latest, "timeline")); });
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots_old")
-                     .attr("cx", function(d) { return runDotScale(metric, d.old, "timeline"); });
+                    .attr("cx", function(d) { return runDotScale(metric, d.old, "timeline"); });
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots")
-                     .attr("cx", function(d) { return runDotScale(metric, d.latest, "timeline"); });
+                    .attr("cx", function(d) { return runDotScale(metric, d.latest, "timeline"); });
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineLabels")
                      .attr("x", function(d,i) {
                        if ((metric=="undernourished" | metric=="under5" | metric=="maternal") & i!=1) {
@@ -1009,9 +1014,8 @@ function init() {
                      });
     var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; }).sort(function(a,b) { return a[variableLatest] - b[variableLatest]; });
     var randomArray10 = randomGenerate(15, dataset_otherMetrics.length);
-    dataset_otherMetrics15 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
-    svg_otherMetrics.selectAll(".compGroup")
-                     .data(dataset_otherMetrics15);
+    dataset_randomSubset = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
+    svg_otherMetrics.selectAll(".compGroup").data(dataset_randomSubset);
     svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
                      .attr("x", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
                      .attr("width",0);
@@ -1039,9 +1043,8 @@ function init() {
                        else { return "end"; }
                      })
                      .style("fill", "none");
-  }; // end updateOtherMetricsMetric
-  function metricButtonClick(metric) {
-    updateOtherMetricsMetric(metric);
+
+    // HTML changes
     document.getElementById("svg-otherMetrics").style.height = h_svgOther_init + "px";
     document.getElementById("button-otherShow").style.display = "inline";
     document.getElementById("button-otherRandomize").style.display = "none";
@@ -1071,38 +1074,55 @@ function init() {
     }
     document.getElementById("otherMetricsTitle").innerHTML = title;
     document.getElementById("otherMetricsSubhead").innerHTML = subhead;
-
-  }; // end metricButtonClick
+  }; // end changeMetric
   reset();
   setup();
 
   // Interactivity
   // TIMELINE BUTTONS
   // Randomize 20 countries
-  d3.select("#button-timelineRandomize").on("click", function() {
-    updateTimeline("randomize");
+  d3.select("#button-worldRandomize").on("click", function() {
+    currMetric = "lifeExpectancy";
+    updateView(svg_lifeExpectancy_timeline, "randomize", 1);
   });
   // Sort by years increased
-  d3.select("#button-timelineChange").on("click", function() {
-    updateTimeline("sortChange")
+  d3.select("#button-worldChange").on("click", function() {
+    currMetric = "lifeExpectancy";
+    updateView(svg_lifeExpectancy_timeline, "sortChange", 1);
+    // update button styles
+    d3.selectAll(".button-world").style("background-color", "transparent");
+    d3.select(this).style("background-color", accentColor);
   }); // end on click button-change
   // Sort by life expectancy
-  d3.select("#button-timelineMetric").on("click", function() {
-    updateTimeline("sortMetric")
+  d3.select("#button-worldMetric").on("click", function() {
+    currMetric = "lifeExpectancy";
+    d3.selectAll(".button-world").style("background-color", "transparent");
+    updateView(svg_lifeExpectancy_timeline, "sortMetric", 1);
+    // update button styles
+    d3.select(this).style("background-color", accentColor);
   }); // end on click button-change
 
   // LDC BUTTONS
   // Randomize 10
-  d3.select("#button-LDCrandomize").on("click", function() {
-    updateLDC("randomize");
+  d3.select("#button-compRandomize").on("click", function() {
+    currMetric = "lifeExpectancy";
+    updateView(svg_lifeExpectancy_comp, "randomize", 2);
   });
   // Sort by years increased
-  d3.select("#button-LDCchange").on("click", function() {
-    updateLDC("sortChange");
+  d3.select("#button-compChange").on("click", function() {
+    currMetric = "lifeExpectancy";
+    updateView(svg_lifeExpectancy_comp, "sortChange", 2);
+    // update button styles
+    d3.selectAll(".button-comp").style("background-color", "transparent");
+    d3.select(this).style("background-color", accentColor);
   }); // end on click button-change
   // Sort by metric
-  d3.select("#button-LDCmetric").on("click", function() {
-    updateLDC("sortMetric");
+  d3.select("#button-compMetric").on("click", function() {
+    currMetric = "lifeExpectancy";
+    d3.selectAll(".button-comp").style("background-color", "transparent");
+    updateView(svg_lifeExpectancy_comp, "sortMetric", 2);
+    // update button styles
+    d3.select(this).style("background-color", accentColor);
   }); // end on click button-change
   // LDC accordion //// TODO: Change this if I only have 1 accordion
   var accordions = jQuery(".accordion");
@@ -1122,29 +1142,29 @@ function init() {
 
   // Other metrics buttons
   d3.select("#button-undernourished").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
+    currMetric = "undernourished";
+    changeMetric("undernourished");
     d3.select(this).style("background-color", accentColor);
-    metricButtonClick("undernourished");
   });
   d3.select("#button-under5").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
+    currMetric = "under5";
+    changeMetric("under5");
     d3.select(this).style("background-color", accentColor);
-    metricButtonClick("under5");
   });
   d3.select("#button-maternal").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
+    currMetric = "maternal";
+    changeMetric("maternal");
     d3.select(this).style("background-color", accentColor);
-    metricButtonClick("maternal");
   });
   d3.select("#button-sanitation").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
+    currMetric = "sanitation";
+    changeMetric("sanitation");
     d3.select(this).style("background-color", accentColor);
-    metricButtonClick("sanitation");
   });
   d3.select("#button-electricity").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
+    currMetric = "electricity";
+    changeMetric("electricity");
     d3.select(this).style("background-color", accentColor);
-    metricButtonClick("electricity");
   });
 
   // Show metrics
@@ -1154,17 +1174,17 @@ function init() {
     document.getElementById("button-otherRandomize").style.display = "inline";
     document.getElementById("button-otherChange").style.display = "inline";
     document.getElementById("button-otherMetric").style.display = "inline";
-    transitionLDC(svg_otherMetrics, "undernourished");
+    showLDC(svg_otherMetrics, "undernourished");
   });
   // Show more LDCs
   d3.select("#button-otherRandomize").on("click", function() {
-    updateOtherMetricsView("randomize", currOtherMetric);
+    updateLDCView(svg_otherMetrics, "randomize");
   });
   d3.select("#button-otherChange").on("click", function() {
-    updateOtherMetricsView("sortChange", currOtherMetric);
+    updateLDCView(svg_otherMetrics, "sortChange");
   });
   d3.select("#button-otherMetric").on("click", function() {
-    updateOtherMetricsView("sortMetric", currOtherMetric);
+    updateLDCView(svg_otherMetrics, "sortMetric");
   });
 }; // end init
 ////////////////////////////////////////////////////////////////////////////////
