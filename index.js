@@ -25,7 +25,7 @@ function init() {
   var h_svgTimeline = 500;
   var h_svgComp = 370;
   var h_svgOther_init = 200;
-  var h_svgOther = 630;
+  var h_svgOther = 475;
   document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
   document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
@@ -207,7 +207,7 @@ function init() {
                            .attr("x1", function(d) { return runDotScale("lifeExpectancy", d, "timeline"); })
                            .attr("x2", function(d) { return runDotScale("lifeExpectancy", d, "timeline"); })
                            .attr("y1", 20)
-                           .attr("y2", h_svgComp-35)
+                           .attr("y2", h_svgComp-20)
                            .style("opacity", function(d,i) {
                              if (i==0) { return 0.5; }
                              else { return 0.3; }
@@ -222,7 +222,7 @@ function init() {
                            .append("text")
                            .attr("class", "lineMarkerLabels")
                            .attr("x", function(d) { return runDotScale("lifeExpectancy", d, "timeline"); })
-                           .attr("y", h_svgComp-20)
+                           .attr("y", h_svgComp-5)
                            .text(function(d,i) {
                              if (i==0) { return "1960 USA avg"; }
                              else { return "2016 USA avg"}
@@ -361,6 +361,7 @@ function init() {
                            .attr("cy", function(d,i) { return 75 + (i+1)*25; });
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("text")
+                           .text(function(d) { return d.countryName; })
                            .attr("class", "timelineLabels")
                            .attr("x", function(d) {
                              if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 90) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") + 10; }
@@ -411,8 +412,8 @@ function init() {
                      .attr("class", "lineMarkers_timeline")
                      .attr("x1", function(d) { return runDotScale("undernourished", d, "timeline"); })
                      .attr("x2", function(d) { return runDotScale("undernourished", d, "timeline"); })
-                     .attr("y1", 20)
-                     .attr("y2", h_svgOther-35)
+                     .attr("y1", 5)
+                     .attr("y2", h_svgOther-20)
                      .style("stroke", "none")
                      .style("opacity", function(d,i) {
                        if (i==0) { return 0.5; }
@@ -424,7 +425,7 @@ function init() {
                      .append("text")
                      .attr("class", "lineMarkerLabels")
                      .attr("x", function(d) { return runDotScale("undernourished", d, "timeline"); })
-                     .attr("y", h_svgOther-20)
+                     .attr("y", h_svgOther-5)
                      .text(function(d,i) {
                        if (i==1) { return "US avg"; }
                        else { return ""}
@@ -432,7 +433,7 @@ function init() {
                      .call(wrap, 60)
                      .style("fill", "none");
     svg_otherMetrics.selectAll("compAvgGroup")
-                     .data([{"country": "USA", "old": 3, "latest": 3}, {"country": "LDC", "old": 35, "latest": 23}])
+                     .data([{"country": "world", "old": 15, "latest": 11}, {"country": "USA", "old": 2.5, "latest": 2.5}, {"country": "LDC", "old": 35, "latest": 23}])
                      .enter()
                      .append("g")
                      .attr("class", "compAvgGroup");
@@ -441,8 +442,8 @@ function init() {
                      .attr("class", "timelineRect")
                      .attr("x", function(d) { return runDotScale("undernourished", d.latest, "timeline"); })
                      .attr("y", function(d,i) {
-                       if (i==1) { return 17 + (i*30); }
-                       else { return 19 + (i*30); }
+                       if (i==1) { return 7 + (i*30); }
+                       else { return 4 + (i*30); }
                      })
                      .attr("height", function(d,i) {
                        if (i==1) { return 16; }
@@ -453,7 +454,7 @@ function init() {
                      .append("circle")
                      .attr("class", "timelineDots_old")
                      .attr("cx", function(d) { return runDotScale("undernourished", d.old, "timeline"); })
-                     .attr("cy", function(d,i) { return 25 + i*30; })
+                     .attr("cy", function(d,i) { return 10 + i*30; })
                      .attr("r", function(d,i) {
                        if (i==1) { return 10; }
                        else { return 7; }
@@ -462,7 +463,7 @@ function init() {
                      .append("circle")
                      .attr("class", "timelineDots")
                      .attr("cx", function(d) { return runDotScale("undernourished", d.latest, "timeline"); })
-                     .attr("cy", function(d,i) { return 25 + i*30; })
+                     .attr("cy", function(d,i) { return 10 + i*30; })
                      .attr("r", function(d,i) {
                        if (i==1) { return 10; }
                        else { return 7; }
@@ -471,11 +472,12 @@ function init() {
                      .append("text")
                      .attr("class", "timelineLabels")
                      .text(function(d,i) {
-                       if (i==0) { return "USA"; }
+                       if (i==0) { return "World (avg)"; }
+                       else if (i==1) { return "USA"; }
                        else { return "Least developed countries (avg)"; }
                      })
                      .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline") + 15; })
-                     .attr("y", function(d,i) { return 29 + i*30; })
+                     .attr("y", function(d,i) { return 14 + i*30; })
                      .style("text-anchor", "start")
                      .style("font-weight", 800)
                      .style("font-size", "12px");
@@ -484,7 +486,7 @@ function init() {
                      .attr("class", "axisLabel")
                      .text(function(d,i) { if (i==1) { return Math.round(d.old); } })
                      .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline")-15; })
-                     .attr("y", function(d,i) { return 29 + i*30; })
+                     .attr("y", function(d,i) { return 14 + i*30; })
                      .style("text-anchor", "end")
                      .style("fill", yellow);
     svg_otherMetrics.selectAll(".compAvgGroup")
@@ -495,17 +497,17 @@ function init() {
                        if (runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline") > 90) { return runDotScale("undernourished", d.latest, "timeline")+15; }
                        else { return runDotScale("undernourished", d.latest, "timeline")-15; }
                      })
-                     .attr("y", function(d,i) { return 29 + i*30; })
+                     .attr("y", function(d,i) { return 14 + i*30; })
                      .style("text-anchor", function(d) {
                        if (runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline") > 90) { return "start"; }
                        else { return "end"; }
                      })
                      .style("fill", blue);
     var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d.undernourished_latest) & !isNaN(d.undernourished_old) & d.ldc == 1; }).sort(function(a,b) { return a.undernourished_latest - b.undernourished_latest; });
-    var randomArray10 = randomGenerate(20, dataset_otherMetrics.length);
-    dataset_otherMetrics20 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
+    var randomArray10 = randomGenerate(15, dataset_otherMetrics.length);
+    dataset_otherMetrics15 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
     svg_otherMetrics.selectAll("compLDCgroup")
-                     .data(dataset_otherMetrics20)
+                     .data(dataset_otherMetrics15)
                      .enter()
                      .append("g")
                      .attr("class", "compGroup");
@@ -513,21 +515,21 @@ function init() {
                      .append("rect")
                      .attr("class", "timelineRect")
                      .attr("x", function(d) { return runDotScale("undernourished", d.undernourished_old, "timeline"); })
-                     .attr("y", function(d,i) { return 69 + (i+1)*25; })
+                     .attr("y", function(d,i) { return 64 + (i+1)*25; })
                      .attr("height", 12);
     svg_otherMetrics.selectAll(".compGroup")
                      .append("circle")
                      .attr("class", "timelineDots")
                      .attr("r", 7)
                      .attr("cx", function(d) { return runDotScale("undernourished", d.undernourished_old, "timeline"); })
-                     .attr("cy", function(d,i) { return 75 + (i+1)*25; })
+                     .attr("cy", function(d,i) { return 70 + (i+1)*25; })
                      .style("fill", "none");
     svg_otherMetrics.selectAll(".compGroup")
                      .append("circle")
                      .attr("class", "timelineDots_old")
                      .attr("r", 7)
                      .attr("cx", runDotScale("undernourished", 35, "timeline"))
-                     .attr("cy", 55);
+                     .attr("cy", 70);
     svg_otherMetrics.selectAll(".compGroup")
                      .append("text")
                      .attr("class", "timelineLabels")
@@ -539,7 +541,7 @@ function init() {
                        else if (d.undernourished_old > d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_old, "timeline") + 15; }
                        else { return runDotScale("undernourished", d.undernourished_old, "timeline") - 15; } // if increased over time
                      })
-                     .attr("y", function(d,i) { return 79 + (i+1)*25; })
+                     .attr("y", function(d,i) { return 74 + (i+1)*25; })
                      .style("text-anchor", function(d) {
                        if (Math.abs(runDotScale("undernourished", d.undernourished_old, "timeline") - runDotScale("undernourished", d.undernourished_latest, "timeline")) > 90) {
                          if (d.undernourished_old > d.undernourished_latest) { return "end"; }
@@ -812,7 +814,7 @@ function init() {
        .ease(d3.easeLinear)
        .duration(800)
        .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
-       .attr("cy", function(d,i) { return 75 + (i+1)*25; });
+       .attr("cy", function(d,i) { return 70 + (i+1)*25; });
     svg.selectAll(".compGroup")
        .select(".timelineRect")
        .transition()
@@ -869,27 +871,27 @@ function init() {
          else { return blue; }
        });
   }; // end transitionLDC
-  function updateOtherMetrics(type, metric) {
+  function updateOtherMetricsView(type, metric) {
     var variableOld = metric+"_old";
     var variableLatest = metric+"_latest";
     var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; }).sort(function(a,b) { return b[variableLatest] - a[variableLatest]; });
     if (type=="randomize") {
       var randomArray10 = randomGenerate(20, dataset_otherMetrics.length);
-      dataset_otherMetrics20 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
+      dataset_otherMetrics15 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
       if (sort == "metric") {
         if (metric == "undernourished" | metric == "under5" | metric == "maternal") {
-          dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; })
+          dataset_otherMetrics15 = dataset_otherMetrics15.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; })
         }
-        else { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+        else { dataset_otherMetrics15 = dataset_otherMetrics15.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
       }
-      else { dataset_otherMetrics20 = dataset_otherMetrics20.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }) };
+      else { dataset_otherMetrics15 = dataset_otherMetrics15.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }) };
       svg_otherMetrics.selectAll(".compGroup")
-                      .data(dataset_otherMetrics20);
+                      .data(dataset_otherMetrics15);
     }
     else if (type=="sortChange") {
       sort = "change";
       svg_otherMetrics.selectAll(".compGroup")
-                      .data(dataset_otherMetrics20.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }));
+                      .data(dataset_otherMetrics15.sort(function(a,b) { return (b[variableOld]-b[variableLatest]) - (a[variableOld]-a[variableLatest]); }));
       d3.select("#button-otherMetric").style("background-color", backgroundGray);
       d3.select("#button-otherChange").style("background-color", accentColor);
     }
@@ -898,7 +900,7 @@ function init() {
       d3.select("#button-otherMetric").style("background-color", accentColor);
       d3.select("#button-otherChange").style("background-color", backgroundGray);
       svg_otherMetrics.selectAll(".compGroup")
-                      .data(dataset_otherMetrics20.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; }));
+                      .data(dataset_otherMetrics15.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; }));
     };
     svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
                     .attr("x", function(d) {
@@ -923,7 +925,6 @@ function init() {
                     .attr("cx", function(d) { return runDotScale(metric, d[variableLatest], "timeline"); });
     svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
                     .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
-                    .attr("cy", function(d,i) { return 75 + (i+1)*25; });
     svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
                     .text(function(d) { return d.countryName; })
                     .attr("x", function(d) {
@@ -942,7 +943,39 @@ function init() {
                       else if (d.undernourished_old > d.undernourished_latest) { return "start"; }
                       else { return "end"; }
                     });
-  };
+  }; // end updateOtherMetricsView
+  function metricButtonClick(metric) {
+    document.getElementById("svg-otherMetrics").style.height = h_svgOther_init + "px";
+    document.getElementById("button-otherShow").style.display = "inline";
+    document.getElementById("button-otherRandomize").style.display = "none";
+    document.getElementById("button-otherChange").style.display = "none";
+    document.getElementById("button-otherMetric").style.display = "none";
+    document.getElementById("otherMetricsTitle").innerHTML = "Access to electricity";
+
+    if (metric == "undernourished") {
+      var title = "Prevalence of undernourishment: <tspan id='otherMetricsSubhead'></tspan>";
+      var subhead = "Percentage of the population whose food intake is insufficient to meet dietary energy requirements continuously"
+    }
+    else if (metric == "under5") {
+      var title = "Under 5 mortality rate: <tspan id='otherMetricsSubhead'></tspan>";
+      var subhead = "Probability per 1,000 that a newborn baby will die before reaching age five";
+    }
+    else if (metric == "maternal") {
+      var title = "Maternal mortality rate: <tspan id='otherMetricsSubhead'></tspan>";
+      var subhead = "Number of women who die from pregnancy-related causes while pregnant or within 42 days of pregnancy termination per 100,000 live births";
+    }
+    else if (metric == "sanitation") {
+      var title = "Access to basic sanitation services: <tspan id='otherMetricsSubhead'></tspan>";
+      var subhead = "Percentage of people using improved sanitation facilities that are not shared with other households";
+    }
+    else if (metric == "electricity") {
+      var title = "Access to electricity: <tspan id='otherMetricsSubhead'></tspan>";
+      var subhead = "Percentage of population with access to electricity";
+    }
+    document.getElementById("otherMetricsTitle").innerHTML = title;
+    document.getElementById("otherMetricsSubhead").innerHTML = subhead;
+
+  }; // end metricButtonClick
   reset();
   setup();
 
@@ -991,6 +1024,32 @@ function init() {
   }; // end for loop
 
   // Other metrics buttons
+  d3.select("#button-undernourished").on("click", function() {
+    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.select(this).style("background-color", accentColor);
+    metricButtonClick("undernourished");
+  });
+  d3.select("#button-under5").on("click", function() {
+    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.select(this).style("background-color", accentColor);
+    metricButtonClick("under5");
+  });
+  d3.select("#button-maternal").on("click", function() {
+    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.select(this).style("background-color", accentColor);
+    metricButtonClick("maternal");
+  });
+  d3.select("#button-sanitation").on("click", function() {
+    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.select(this).style("background-color", accentColor);
+    metricButtonClick("sanitation");
+  });
+  d3.select("#button-electricity").on("click", function() {
+    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.select(this).style("background-color", accentColor);
+    metricButtonClick("electricity");
+  });
+
   // Show metrics
   d3.select("#button-otherShow").on("click", function() {
     document.getElementById("svg-otherMetrics").style.height = h_svgOther + "px";
@@ -1002,13 +1061,13 @@ function init() {
   });
   // Show more LDCs
   d3.select("#button-otherRandomize").on("click", function() {
-    updateOtherMetrics("randomize", currOtherMetric);
+    updateOtherMetricsView("randomize", currOtherMetric);
   });
   d3.select("#button-otherChange").on("click", function() {
-    updateOtherMetrics("sortChange", currOtherMetric);
+    updateOtherMetricsView("sortChange", currOtherMetric);
   });
   d3.select("#button-otherMetric").on("click", function() {
-    updateOtherMetrics("sortMetric", currOtherMetric);
+    updateOtherMetricsView("sortMetric", currOtherMetric);
   });
 }; // end init
 ////////////////////////////////////////////////////////////////////////////////

@@ -186,11 +186,20 @@ ul {
 #ldc-p {
   margin: 0; }
 
+#otherMetricsTitle {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 18px; }
+
+#otherMetricsSubhead {
+  font-size: 12px;
+  margin-top: 0;
+  font-weight: 300; }
+
 #button-metricsContainer {
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  margin: auto;
-  margin-bottom: 30px; }
+  margin: auto; }
 
 .button-otherMetrics {
   margin-bottom: 10px;
