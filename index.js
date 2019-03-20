@@ -336,7 +336,7 @@ function init() {
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("rect")
                            .attr("class", "timelineRect")
-                           .attr("y", function(d,i) { return 70 + (i+1)*25; })
+                           .attr("y", function(d,i) { return 69 + (i+1)*25; })
                            .attr("height", 12)
                            .attr("width", function(d) { return Math.abs(runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline")); })
                            .attr("x", function(d) {
@@ -476,7 +476,10 @@ function init() {
                        else if (i==1) { return "USA"; }
                        else { return "Least developed countries (avg)"; }
                      })
-                     .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline") + 15; })
+                     .attr("x", function(d,i) {
+                       if (i!=1) { return runDotScale("undernourished", d.old, "timeline") + 35; }
+                       else { return runDotScale("undernourished", d.old, "timeline") + 15; }
+                     })
                      .attr("y", function(d,i) { return 14 + i*30; })
                      .style("text-anchor", "start")
                      .style("font-weight", 800)
@@ -484,14 +487,16 @@ function init() {
     svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("text")
                      .attr("class", "axisLabel")
-                     .text(function(d,i) { if (i==1) { return Math.round(d.old); } })
-                     .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline")-15; })
+                     .attr("id", "axisLabelOld")
+                     .text(function(d,i) { if (i!=1) { return Math.round(d.old); } })
+                     .attr("x", function(d) { return runDotScale("undernourished", d.old, "timeline")+15; })
                      .attr("y", function(d,i) { return 14 + i*30; })
-                     .style("text-anchor", "end")
+                     .style("text-anchor", "start")
                      .style("fill", yellow);
     svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("text")
                      .attr("class", "axisLabel")
+                     .attr("id", "axisLabelLatest")
                      .text(function(d) { return Math.round(d.latest); })
                      .attr("x", function(d) {
                        if (runDotScale("undernourished", d.latest, "timeline") - runDotScale("undernourished", d.old, "timeline") > 90) { return runDotScale("undernourished", d.latest, "timeline")+15; }
@@ -667,25 +672,15 @@ function init() {
       else { var min = d3.min(dataset_countries, function(d) { return d.undernourished_old; }); }
       var max = d3.max(dataset_countries, function(d) { return d.undernourished_old; })
     }
-    else if (metric=="under5mortality") {
+    else if (metric=="under5") {
       if (type=="topline") { var min = d3.min(dataset_countries, function(d) { return d.under5_latest; }); }
       else { var min = d3.min(dataset_countries, function(d) { return d.under5_old; }); }
       var max = d3.max(dataset_countries, function(d) { return d.under5_old; })
     }
-    else if (metric=="maternalMortality") {
+    else if (metric=="maternal") {
       if (type=="topline") { var min = d3.min(dataset_countries, function(d) { return d.maternal_latest; }); }
       else { var min = d3.min(dataset_countries, function(d) { return d.maternal_old; }); }
       var max = d3.max(dataset_countries, function(d) { return d.maternal_old; })
-    }
-    else if (metric=="sanitationUrban") {
-      if (type=="topline") { var min = d3.min(dataset_countries, function(d) { return d.sanitationUrban_latest; }); }
-      else { var min = d3.min(dataset_countries, function(d) { return d.sanitationUrban_old; }); }
-      var max = d3.max(dataset_countries, function(d) { return d.sanitationUrban_latest; })
-    }
-    else if (metric=="sanitationRural") {
-      if (type=="topline") { var min = d3.min(dataset_countries, function(d) { return d.sanitationRural_latest; }); }
-      else { var min = d3.min(dataset_countries, function(d) { return d.sanitationRural_old; }); }
-      var max = d3.max(dataset_countries, function(d) { return d.sanitationRural_latest; })
     }
     else {
       if (type=="topline") { var min = d3.min(dataset_countries, function(d) { return d.healthExpenditure_latest; }); }
@@ -944,7 +939,109 @@ function init() {
                       else { return "end"; }
                     });
   }; // end updateOtherMetricsView
+  function updateOtherMetricsMetric(metric) {
+    var variableOld = metric+"_old";
+    var variableLatest = metric+"_latest";
+    if (metric=="undernourished") {
+      dataset_linemarkers = [2.5, 2.5];
+      dataset_compAvg = [{"country": "world", "old": 15, "latest": 11}, {"country": "USA", "old": 2.5, "latest": 2.5}, {"country": "LDC", "old": 35, "latest": 23}];
+    }
+    else if (metric=="under5") {
+      dataset_linemarkers = [11, 7];
+      dataset_compAvg = [{"country": "world", "old": 93, "latest": 39}, {"country": "USA", "old": 11, "latest": 7}, {"country": "LDC", "old": 175, "latest": 66}];
+    }
+    else if (metric=="maternal") {
+      dataset_linemarkers = [12, 14];
+      dataset_compAvg = [{"country": "world", "old": 385, "latest": 174}, {"country": "USA", "old": 12, "latest": 14}, {"country": "LDC", "old": 903, "latest": 436}];
+    }
+    else if (metric=="sanitation") {
+      dataset_linemarkers = [100, 100];
+      dataset_compAvg = [{"country": "world", "old": 58, "latest": 68}, {"country": "USA", "old": 100, "latest": 100}, {"country": "LDC", "old": 22, "latest": 32}];
+    }
+    else if (metric=="electricity") {
+      dataset_linemarkers = [100, 100];
+      dataset_compAvg = [{"country": "world", "old": 71, "latest": 87}, {"country": "USA", "old": 100, "latest": 100}, {"country": "LDC", "old": 9, "latest": 45}];
+    }
+    svg_otherMetrics.selectAll(".lineMarkers_timeline")
+                     .data(dataset_linemarkers)
+                     .attr("x1", function(d) { return runDotScale(metric, d, "timeline"); })
+                     .attr("x2", function(d) { return runDotScale(metric, d, "timeline"); })
+                     .style("stroke", "none"); // keep hidden for now
+    svg_otherMetrics.selectAll(".lineMarkerLabels")
+                     .data(dataset_linemarkers)
+                     .attr("x", function(d) { return runDotScale(metric, d, "timeline"); })
+                     .attr("y", h_svgOther-5)
+                     .text("US avg")
+                     .call(wrap, 60)
+                     .style("fill", "none");
+    svg_otherMetrics.selectAll(".compAvgGroup")
+                     .data(dataset_compAvg);
+    svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineRect")
+                     .attr("x", function(d) { return runDotScale(metric, d.latest, "timeline"); })
+                     .attr("width", function(d) { return Math.abs(runDotScale(metric, d.old, "timeline") - runDotScale(metric, d.latest, "timeline")); });
+    svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots_old")
+                     .attr("cx", function(d) { return runDotScale(metric, d.old, "timeline"); });
+    svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots")
+                     .attr("cx", function(d) { return runDotScale(metric, d.latest, "timeline"); });
+    svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineLabels")
+                     .attr("x", function(d,i) {
+                       if ((metric=="undernourished" | metric=="under5" | metric=="maternal") & i!=1) {
+                         if (d.old>99) { return runDotScale(metric, d.old, "timeline") + 45; }
+                         else { return runDotScale(metric, d.old, "timeline") + 35; }
+                       }
+                       else { return runDotScale(metric, d.old, "timeline") + 15; }
+                     });
+    svg_otherMetrics.selectAll(".compAvgGroup").select("#axisLabelOld")
+                     .text(function(d,i) { if (i!=1) { return Math.round(d.old); } })
+                     .attr("x", function(d) {
+                       if (metric=="undernourished" | metric=="under5" | metric=="maternal") { return runDotScale(metric, d.old, "timeline")+15; }
+                       else { return runDotScale(metric, d.old, "timeline")-15; }
+                     });
+    svg_otherMetrics.selectAll(".compAvgGroup").select("#axisLabelLatest")
+                     .text(function(d) { return Math.round(d.latest); })
+                     .attr("x", function(d) {
+                       if (runDotScale(metric, d.latest, "timeline") - runDotScale(metric, d.old, "timeline") > 90) { return runDotScale(metric, d.latest, "timeline")+15; }
+                       else { return runDotScale(metric, d.latest, "timeline")-15; }
+                     })
+                     .style("text-anchor", function(d) {
+                       if (runDotScale(metric, d.latest, "timeline") - runDotScale(metric, d.old, "timeline") > 90) { return "start"; }
+                       else { return "end"; }
+                     });
+    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; }).sort(function(a,b) { return a[variableLatest] - b[variableLatest]; });
+    var randomArray10 = randomGenerate(15, dataset_otherMetrics.length);
+    dataset_otherMetrics15 = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
+    svg_otherMetrics.selectAll(".compGroup")
+                     .data(dataset_otherMetrics15);
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
+                     .attr("x", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
+                     .attr("width",0);
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineDots")
+                     .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
+                     .style("fill", "none");
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
+                     .attr("cx", runDotScale(metric, dataset_compAvg.filter(function(d) { return d.country=="LDC"})[0].old, "timeline"))
+                     .attr("cy", 70);
+    svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
+                     .attr("x", function(d) {
+                       // if it doesn't fit into rect
+                       if (Math.abs(runDotScale(metric, d[variableOld], "timeline") - runDotScale(metric, d[variableLatest], "timeline")) > 90)
+                        if (d[variableOld] > d[variableLatest]){ return runDotScale(metric, d[variableOld], "timeline") - 10; }
+                        else { return runDotScale(metric, d[variableOld], "timeline") + 15; }
+                       else if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "timeline") + 15; }
+                       else { return runDotScale(metric, d[variableOld], "timeline") - 15; } // if increased over time
+                     })
+                     .style("text-anchor", function(d) {
+                       if (Math.abs(runDotScale(metric, d[variableOld], "timeline") - runDotScale(metric, d[variableLatest], "timeline")) > 90) {
+                         if (d[variableOld] > d[variableLatest]) { return "end"; }
+                         else { return "start"; }
+                       }
+                       else if (d[variableOld] > d[variableLatest]) { return "start"; }
+                       else { return "end"; }
+                     })
+                     .style("fill", "none");
+  }; // end updateOtherMetricsMetric
   function metricButtonClick(metric) {
+    updateOtherMetricsMetric(metric);
     document.getElementById("svg-otherMetrics").style.height = h_svgOther_init + "px";
     document.getElementById("button-otherShow").style.display = "inline";
     document.getElementById("button-otherRandomize").style.display = "none";
@@ -1025,27 +1122,27 @@ function init() {
 
   // Other metrics buttons
   d3.select("#button-undernourished").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
     d3.select(this).style("background-color", accentColor);
     metricButtonClick("undernourished");
   });
   d3.select("#button-under5").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
     d3.select(this).style("background-color", accentColor);
     metricButtonClick("under5");
   });
   d3.select("#button-maternal").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
     d3.select(this).style("background-color", accentColor);
     metricButtonClick("maternal");
   });
   d3.select("#button-sanitation").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
     d3.select(this).style("background-color", accentColor);
     metricButtonClick("sanitation");
   });
   d3.select("#button-electricity").on("click", function() {
-    d3.selectAll(".button-otherMetrics").style("background-color", "none");
+    d3.selectAll(".button-otherMetrics").style("background-color", "transparent");
     d3.select(this).style("background-color", accentColor);
     metricButtonClick("electricity");
   });
