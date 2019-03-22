@@ -12,12 +12,11 @@ function init() {
   // Margins
   var w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
   var marginLeft = 10;
-  var marginRight = 10;
+  var marginLeftMore = 40;
+  var marginRight = 20;
   var marginTop = 5;
   // Margins for topline
-  var w_maxDot = w - marginRight - marginLeft;
-  // Margins for timeline
-  var marginLeftMore = 30;
+  var w_maxDot = w - marginRight - marginLeftMore;
   // Margins for comparison view
   var w_locationLabel = (w - marginLeft - marginRight)/3;
   var w_bar = 70;
@@ -695,7 +694,7 @@ function init() {
     }
     var dotScale = d3.scaleLinear()
                      .domain([min, max])
-                     .range([marginLeftMore, w_maxDot-marginRight]);
+                     .range([marginLeftMore, w_maxDot]);
     return dotScale(value);
   }; // end runDotScale
   function randomGenerate(length, max) {
@@ -890,7 +889,6 @@ function init() {
        .ease(d3.easeLinear)
        .duration(1000)
        .delay(2500)
-       .text(function(d) { return d.countryName; })
        .style("fill", "black");
     svg.selectAll(".lineMarkers_timeline")
        .transition()
@@ -957,7 +955,7 @@ function init() {
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots")
                     .attr("cx", function(d) { return runDotScale(metric, d.latest, "timeline"); });
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineLabels")
-                     .attr("x", function(d,i) {
+                    .attr("x", function(d,i) {
                        if ((metric=="undernourished" | metric=="under5" | metric=="maternal") & i!=1) {
                          if (d.old>99) { return runDotScale(metric, d.old, "timeline") + 45; }
                          else { return runDotScale(metric, d.old, "timeline") + 35; }
@@ -980,10 +978,13 @@ function init() {
                        if (runDotScale(metric, d.latest, "timeline") - runDotScale(metric, d.old, "timeline") > 90) { return "start"; }
                        else { return "end"; }
                      });
-    var dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; }).sort(function(a,b) { return a[variableLatest] - b[variableLatest]; });
+    dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; });
     var randomArray10 = randomGenerate(15, dataset_otherMetrics.length);
-    dataset_randomSubset = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); });
-    svg_otherMetrics.selectAll(".compGroup").data(dataset_randomSubset);
+    if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+      dataset_randomOtherSubset = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); }).sort(function(a,b) { return a[variableLatest] - b[variableLatest]; })
+    }
+    else { dataset_randomOtherSubset = dataset_otherMetrics.filter(function(d,i) { return randomArray10.includes(i); }).sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }); }
+    svg_otherMetrics.selectAll(".compGroup").data(dataset_randomOtherSubset);
     svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
                      .attr("x", function(d) { return runDotScale(metric, d[variableOld], "timeline"); })
                      .attr("width",0);
@@ -994,6 +995,7 @@ function init() {
                      .attr("cx", runDotScale(metric, dataset_compAvg.filter(function(d) { return d.country=="LDC"})[0].old, "timeline"))
                      .attr("cy", 70);
     svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
+                    .text(function(d) { return d.countryName; })
                      .attr("x", function(d) {
                        // if it doesn't fit into rect
                        if (Math.abs(runDotScale(metric, d[variableOld], "timeline") - runDotScale(metric, d[variableLatest], "timeline")) > 90)
@@ -1011,6 +1013,56 @@ function init() {
                        else { return "end"; }
                      })
                      .style("fill", "none");
+    svg_otherMetrics.selectAll(".compGroup")
+                     .on("mouseover", function(d) {
+                       var currGroup = d3.select(this);
+                       currGroup.select(".timelineDots").style("fill", accentColor);
+                       currGroup.select(".timelineDots_old").style("fill", accentColor);
+                       currGroup.append("text")
+                                .attr("class", "axisLabel")
+                                .text(function(d) { return Math.round(d[variableOld]); })
+                                .attr("x", function(d) {
+                                  // if country name doesn't fit in rectangle
+                                  if (Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")) < 90) {
+                                    if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "timeline") + parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) + 20; }
+                                    else { return runDotScale(metric, d[variableOld], "timeline") - parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) - 20; }
+                                  }
+                                  // if it does fit
+                                  else {
+                                    if (d[variableOld] > d[variableLatest]) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+15; }
+                                    else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
+                                  }
+                                })
+                                .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                                .style("text-anchor", function(d) {
+                                  if (Math.abs(runDotScale(metric, d[variableLatest], "timeline") - runDotScale(metric, d[variableOld], "timeline")) > 90 & d[variableOld] > d[variableLatest]) { return "start"; }
+                                  else {
+                                    if (d[variableOld] > d[variableLatest]) { return "start"; }
+                                    else { return "end"; }
+                                  }
+                                })
+                                .style("fill", accentColor);
+                      currGroup.append("text")
+                               .attr("class", "axisLabel")
+                               .text(function(d) { return Math.round(d[variableLatest]); })
+                               .attr("x", function(d) {
+                                 if (d[variableOld] < d[variableLatest]) { return runDotScale(metric, d[variableLatest], "timeline") + 15; }
+                                 else { return parseFloat(currGroup.select(".timelineDots").attr("cx"))-15; }
+                               })
+                               .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
+                               .style("text-anchor", function(d) {
+                                 if (d[variableOld] < d[variableLatest]) { return "start"; }
+                                 else { return "end"; }
+                               })
+                               .style("fill", accentColor);
+                     })
+                     .on("mouseout", function() {
+                       var currGroup = d3.select(this);
+                       currGroup.select(".timelineDots").style("fill", blue);
+                       currGroup.select(".timelineDots_old").style("fill", yellow);
+                       currGroup.selectAll(".axisLabel").remove();
+                     });
+
 
     // HTML changes
     document.getElementById("svg-otherMetrics").style.height = h_svgOther_init + "px";
@@ -1142,7 +1194,7 @@ function init() {
     document.getElementById("button-otherChange").style.display = "inline";
     document.getElementById("button-otherMetric").style.display = "inline";
     document.getElementById("button-otherMetric").style.backgroundColor = accentColor;
-    showLDC(svg_otherMetrics, "undernourished");
+    showLDC(svg_otherMetrics, currOtherMetric);
   });
   // Show more LDCs
   d3.select("#button-otherRandomize").on("click", function() {
