@@ -1117,7 +1117,7 @@ function init() {
       this.classList.toggle("active");
       panel.style.maxHeight = panel.scrollHeight + "px"; // show the panel clicked on
     }
-  }); // end for loop 
+  }); // end for loop
 
   // Other metrics buttons
   d3.select("#button-undernourished").on("click", function() {
