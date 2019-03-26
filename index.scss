@@ -3,7 +3,7 @@ $blue: #669BB5;
 $babyBlue: #D6ECFD;
 $accentColor: #FC5742;
 $lightBlue: #BACFDA;
-$yellow: #E2CA84;
+$yellow: #EC9F2E;
 
 body {
   min-width: 300px;
@@ -47,7 +47,6 @@ a {
 button {
   background-color: $backgroundGray;
   opacity: 0.8;
-  font-size: 12px;
   border-radius: 2px;
   height: 23px;
   font-weight: 500;
@@ -75,17 +74,12 @@ button {
   font-weight: 800;
   font-size: 20px;
 }
-.main-section {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
 .chart-title {
   border-bottom: 1.5px solid;
-  font-size: 20px;
   padding-bottom: 3px;
 }
 .accordion-section {
-  padding-top: 30px;
+  padding-top: 40px;
 }
 .toplineDots {
   opacity: 0.2;
@@ -98,11 +92,9 @@ button {
 }
 .highlightText {
   fill: $accentColor;
-  font-size: 13px;
   text-anchor: middle;
 }
 .axisLabel {
-  font-size: 11px;
   text-anchor: middle;
 }
 .timelineDots {
@@ -115,19 +107,15 @@ button {
   opacity: 0.4;
   fill: $lightBlue;
 }
-.timelineLabels {
-  font-size: 11px;
-}
 .lineMarkers_timeline {
   stroke-width: 1.5;
   stroke-dasharray: 5,4;
 }
 .lineMarkerLabels {
   font-size: 11px;
-  text-anchor: middle;
 }
 .button-container {
-  display: flex;
+  flex: flex-wrap;
   margin: auto;
   margin-bottom: 30px;
 }
@@ -154,7 +142,6 @@ button {
   background: $babyBlue;
   line-height: 30px;
   font-weight: 700;
-  font-size: 16px;
   cursor: pointer;
   transition: 0.3s;
   margin: 0;
@@ -248,7 +235,6 @@ ul {
   margin: 0 auto;
 }
 #methods-text {
-  font-size: 13px;
   font-weight: 300;
 }
 
@@ -271,10 +257,31 @@ ul {
     font-weight: 200;
     line-height: 1.5;
   }
+  .highlightText {
+    font-size: 13px;
+  }
+  .axisLabel {
+    font-size: 11px;
+  }
+  .timelineLabels {
+    font-size: 11px;
+  }
+  .chart-title {
+    font-size: 20px;
+  }
+  button {
+    font-size: 12px;
+  }
+  .accordion {
+    font-size: 16px;
+  }
+  #methods-text {
+    font-size: 13px;
+  }
 }
 @media screen and (max-width:400px) {
   h1 {
-    font-size: 20px;
+    font-size: 28px;
     text-align: center;
     margin: 0;
     font-weight: 900;
@@ -283,9 +290,33 @@ ul {
     font-size: 12px;
     font-weight: 300;
   }
+  h5 {
+    font-size: 12px;
+  }
   p {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 200;
     line-height: 1.5;
+  }
+  .highlightText {
+    font-size: 11px;
+  }
+  .axisLabel {
+    font-size: 9px;
+  }
+  .timelineLabels {
+    font-size: 9px;
+  }
+  .chart-title {
+    font-size: 15px;
+  }
+  button {
+    font-size: 10px;
+  }
+  .accordion {
+    font-size: 13px;
+  }
+  #methods-text {
+    font-size: 11px;
   }
 }

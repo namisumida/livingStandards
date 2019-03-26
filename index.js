@@ -37,7 +37,7 @@ function init() {
   var babyBlue = d3.color("#D6ECFD");
   var accentColor = d3.color("#FC5742");
   var lightBlue = d3.color("#BACFDA");
-  var yellow = d3.color("#E2CA84");
+  var yellow = d3.color("#EC9F2E");
   var red = d3.color("#FE707C");
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,10 @@ function init() {
                                .enter()
                                .append("circle")
                                .attr("class", "toplineDots")
-                               .attr("r", 7)
+                               .attr("r", function() {
+                                 if (w>=500) { return 7; }
+                                 else { return 5; }
+                               })
                                .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "topline"); })
                                .attr("cy", 20)
                                .style("stroke", function(d) {
@@ -74,9 +77,14 @@ function init() {
                                .attr("x", function(d) { return runDotScale("lifeExpectancy", d, "topline"); })
                                .attr("y", 50)
                                .text(function(d,i) {
-                                 if (i == 0) { return "Minimum: " + Math.round(d); }
-                                 else if (i == 1) { return "Maximum: " + Math.round(d); }
-                                 else { return "Average: " + Math.round(d); }
+                                 if (i == 0) { return "Min: " + Math.round(d); }
+                                 else if (i == 1) { return "Max: " + Math.round(d); }
+                                 else { return "Avg: " + Math.round(d); }
+                               })
+                               .style("text-anchor", function(d,i) {
+                                 if (i==0) { return "start"}
+                                 else if (i==1) { return "end"; }
+                                 else { return "middle"; }
                                })
                                .call(wrap, 70);
     // Timeline; random set of countries
@@ -95,10 +103,7 @@ function init() {
                                  if (i==0) { return yellow; }
                                  else { return blue; }
                                })
-                               .style("opacity", function(d,i) {
-                                 if (i==0) { return 0.5; }
-                                 else { return 0.3; }
-                               });
+                               .style("opacity", 0.3);
     svg_lifeExpectancy_timeline.selectAll("lineMarkerLabels")
                                .data([63,72])
                                .enter()
@@ -114,6 +119,13 @@ function init() {
                                .style("fill", function(d,i) {
                                  if (i==0) { return yellow; }
                                  else { return blue; }
+                               })
+                               .style("text-anchor", function(d,i) {
+                                 if (w >= 500) { return "middle"; }
+                                 else {
+                                   if (i==0) { return "end"; }
+                                   else { return "start"; }
+                                 }
                                });
     svg_lifeExpectancy_timeline.selectAll("compGroup")
                                .data(dataset_randomWorldSubset)
@@ -130,23 +142,25 @@ function init() {
     svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                .append("circle")
                                .attr("class", "timelineDots_old")
-                               .attr("r", 7)
+                               .attr("r", function() {
+                                 if (w>=500) { return 7; }
+                                 else { return 5; }
+                               })
                                .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
                                .attr("cy", function(d,i) { return 25 + (i*22); });
     svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                 .append("circle")
                                 .attr("class", "timelineDots")
-                                .attr("r", 7)
+                                .attr("r", function() {
+                                  if (w>=500) { return 7; }
+                                  else { return 5; }
+                                })
                                 .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); })
                                 .attr("cy", function(d,i) { return 25 + (i*22); });
     svg_lifeExpectancy_timeline.selectAll(".compGroup")
                                .append("text")
                                .attr("class", "timelineLabels")
-                               .text(function(d) {
-                                 if (d.countryName == "Federated States of Micronesia") { return "Micronesia"; }
-                                 else if (d.countryName == "St. Vincent and the Grenadines") { return "St. Vincent & Grenadines"; }
-                                 else { return d.countryName; }
-                               })
+                               .text(function(d) { return d.countryName; })
                                .attr("x", function(d) {
                                  if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 107) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") + 10; }
                                  else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") - 10; }
@@ -211,10 +225,7 @@ function init() {
                            .attr("x2", function(d) { return runDotScale("lifeExpectancy", d, "ldc"); })
                            .attr("y1", 20)
                            .attr("y2", h_svgComp-20)
-                           .style("opacity", function(d,i) {
-                             if (i==0) { return 0.5; }
-                             else { return 0.3; }
-                           })
+                           .style("opacity", 0.3)
                            .style("stroke", function(d,i) {
                              if (i==0) { return yellow; }
                              else { return blue; }
@@ -234,6 +245,13 @@ function init() {
                            .style("fill", function(d,i) {
                              if (i==0) { return yellow; }
                              else { return blue; }
+                           })
+                           .style("text-anchor", function(d,i) {
+                             if (w >= 550) { return "middle"; }
+                             else {
+                               if (i==0) { return "end"; }
+                               else { return "start"; }
+                             }
                            });
     svg_lifeExpectancy_comp.selectAll("axisLabel")
                            .data(["1960", "2016"])
@@ -271,8 +289,14 @@ function init() {
                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.old, "ldc"); })
                            .attr("cy", function(d,i) { return 25 + i*30; })
                            .attr("r", function(d,i) {
-                             if (i==1) { return 10; }
-                             else { return 7; }
+                             if (i==1) {
+                               if (w>=500) { return 10; }
+                               else { return 7; }
+                             }
+                             else {
+                               if (w>=500) { return 7; }
+                               else { return 5; }
+                             }
                            });
     svg_lifeExpectancy_comp.selectAll(".compAvgGroup")
                            .append("circle")
@@ -280,15 +304,21 @@ function init() {
                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.latest, "ldc"); })
                            .attr("cy", function(d,i) { return 25 + i*30; })
                            .attr("r", function(d,i) {
-                             if (i==1) { return 10; }
-                             else { return 7; }
+                             if (i==1) {
+                               if (w>=500) { return 10; }
+                               else { return 7; }
+                             }
+                             else {
+                               if (w>=500) { return 7; }
+                               else { return 5; }
+                             }
                            });
     svg_lifeExpectancy_comp.selectAll(".compAvgGroup")
                            .append("text")
                            .attr("class", "timelineLabels")
                            .text(function(d,i) {
                              if (i==0) { return "USA"; }
-                             else { return "Least developed countries (avg)"; }
+                             else { return "LDC (avg)"; }
                            })
                            .attr("x", function(d) {
                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.old, "ldc") + 15; }
@@ -304,6 +334,7 @@ function init() {
     svg_lifeExpectancy_comp.selectAll(".compAvgGroup")
                            .append("text")
                            .attr("class", "axisLabel")
+                           .attr("id", "axisLabelOld")
                            .text(function(d) { return Math.round(d.old); })
                            .attr("x", function(d) {
                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.old, "ldc")-15; }
@@ -318,6 +349,7 @@ function init() {
     svg_lifeExpectancy_comp.selectAll(".compAvgGroup")
                            .append("text")
                            .attr("class", "axisLabel")
+                           .attr("id", "axisLabelLatest")
                            .text(function(d) { return Math.round(d.latest); })
                            .attr("x", function(d) {
                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.latest, "ldc")+15; }
@@ -353,14 +385,20 @@ function init() {
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("circle")
                            .attr("class", "timelineDots")
-                           .attr("r", 7)
+                           .attr("r", function() {
+                             if (w>=500) { return 7; }
+                             else { return 5; }
+                           })
                            .attr("cy", function(d,i) { return 75 + (i+1)*25; })
                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc"); })
                            .style("fill", blue);
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .append("circle")
                            .attr("class", "timelineDots_old")
-                           .attr("r", 7)
+                           .attr("r", function() {
+                             if (w>=500) { return 7; }
+                             else { return 5; }
+                           })
                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc"); })
                            .attr("cy", function(d,i) { return 75 + (i+1)*25; });
     svg_lifeExpectancy_comp.selectAll(".compGroup")
@@ -419,7 +457,7 @@ function init() {
                      .attr("y1", 55)
                      .attr("y2", h_svgOther-20)
                      .style("stroke", "none")
-                     .style("opacity", 0.5)
+                     .style("opacity", 0.3);
     svg_otherMetrics.selectAll("lineMarkerLabels")
                      .data([2.5])
                      .enter()
@@ -454,8 +492,14 @@ function init() {
                      .attr("cx", function(d) { return runDotScale("undernourished", d.old, "ldc"); })
                      .attr("cy", function(d,i) { return 25 + i*30; })
                      .attr("r", function(d,i) {
-                       if (i==1) { return 10; }
-                       else { return 7; }
+                       if (i==1) {
+                         if (w>=500) { return 10; }
+                         else { return 7; }
+                       }
+                       else {
+                         if (w>=500) { return 7; }
+                         else { return 5; }
+                       }
                      });
     svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("circle")
@@ -463,8 +507,14 @@ function init() {
                      .attr("cx", function(d) { return runDotScale("undernourished", d.latest, "ldc"); })
                      .attr("cy", function(d,i) { return 25 + i*30; })
                      .attr("r", function(d,i) {
-                       if (i==1) { return 10; }
-                       else { return 7; }
+                       if (i==1) {
+                         if (w>=500) { return 10; }
+                         else { return 7; }
+                       }
+                       else {
+                         if (w>=500) { return 7; }
+                         else { return 5; }
+                       }
                      });
     svg_otherMetrics.selectAll(".compAvgGroup")
                      .append("text")
@@ -472,7 +522,7 @@ function init() {
                      .text(function(d,i) {
                        if (i==0) { return "World (avg)"; }
                        else if (i==1) { return "USA"; }
-                       else { return "Least developed countries (avg)"; }
+                       else { return "LDC (avg)"; }
                      })
                      .attr("x", function(d,i) {
                        if (i!=1) { return runDotScale("undernourished", d.old, "ldc") + 35; }
@@ -539,14 +589,20 @@ function init() {
     svg_otherMetrics.selectAll(".compGroup")
                      .append("circle")
                      .attr("class", "timelineDots")
-                     .attr("r", 7)
+                     .attr("r", function() {
+                       if (w>=500) { return 7; }
+                       else { return 5; }
+                     })
                      .attr("cx", function(d) { return runDotScale("undernourished", d.undernourished_old, "ldc"); })
                      .attr("cy", function(d,i) { return 85 + (i+1)*25; })
                      .style("fill", "none");
     svg_otherMetrics.selectAll(".compGroup")
                      .append("circle")
                      .attr("class", "timelineDots_old")
-                     .attr("r", 7)
+                     .attr("r", function() {
+                       if (w>=500) { return 7; }
+                       else { return 5; }
+                     })
                      .attr("cx", runDotScale("undernourished", 35, "ldc"))
                      .attr("cy", 85);
     svg_otherMetrics.selectAll(".compGroup")
@@ -627,6 +683,122 @@ function init() {
     currOtherMetric = "undernourished";
   }; // end reset function
   function resize() {
+    w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
+    w_maxDot = w - marginRight - marginLeftMore;
+    w_locationLabel = (w - marginLeft - marginRight)/3;
+    // Topline svg
+    svg_lifeExpectancy_topline.selectAll(".toplineDots")
+                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "topline"); });
+    svg_lifeExpectancy_topline.selectAll(".avgLine")
+                               .attr("x1", runDotScale("lifeExpectancy", 72, "topline"))
+                               .attr("x2", runDotScale("lifeExpectancy", 72, "topline"))
+    svg_lifeExpectancy_topline.selectAll(".highlightText")
+                               .attr("x", function(d) { return runDotScale("lifeExpectancy", d, "topline"); })
+                               .attr("y", 50)
+                               .text(function(d,i) {
+                                 if (i == 0) { return "Min: " + Math.round(d); }
+                                 else if (i == 1) { return "Max: " + Math.round(d); }
+                                 else { return "Avg: " + Math.round(d); }
+                               })
+                               .call(wrap, 70);
+    // Life expectancy around the world svg
+    svg_lifeExpectancy_timeline.selectAll(".lineMarkers_timeline")
+                               .attr("x1", function(d) { return runDotScale("lifeExpectancy", d, "timeline"); })
+                               .attr("x2", function(d) { return runDotScale("lifeExpectancy", d, "timeline"); });
+    svg_lifeExpectancy_timeline.selectAll(".lineMarkerLabels")
+                               .attr("x", function(d) { return runDotScale("lifeExpectancy", d, "timeline"); })
+                               .attr("y", h_svgTimeline-20)
+                               .text(function(d,i) {
+                                 if (i==0) { return "1960 global avg"; }
+                                 else { return "2016 global avg"}
+                               })
+                               .call(wrap, 60)
+                               .style("text-anchor", function(d,i) {
+                                 if (w >= 500) { return "middle"; }
+                                 else {
+                                   if (i==0) { return "end"; }
+                                   else { return "start"; }
+                                 }
+                               });
+    svg_lifeExpectancy_timeline.selectAll(".compGroup").selectAll(".timelineRect")
+                               .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); })
+                               .attr("width", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); });
+    svg_lifeExpectancy_timeline.selectAll(".compGroup").selectAll(".timelineDots_old")
+                               .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline"); });
+    svg_lifeExpectancy_timeline.selectAll(".compGroup").selectAll(".timelineDots")
+                                .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest); });
+    svg_lifeExpectancy_timeline.selectAll(".compGroup").selectAll(".timelineLabels")
+                               .attr("x", function(d) {
+                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 107) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") + 10; }
+                                 else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") - 10; }
+                               })
+                               .style("text-anchor", function(d) {
+                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 107) { return "start"; }
+                                 else { return "end"; }
+                               });
+    svg_lifeExpectancy_timeline.selectAll("#axisLabelYear")
+                               .attr("x", function(d,i) {
+                                 if (i==0) { return runDotScale("lifeExpectancy", dataset_randomWorldSubset[0].lifeExpectancy_old, "timeline"); }
+                                 else { return runDotScale("lifeExpectancy", dataset_randomWorldSubset[0].lifeExpectancy_latest, "timeline"); }
+                               });
+     // Life expectancy US vs LDC svg
+     svg_lifeExpectancy_comp.selectAll(".lineMarkers_timeline")
+                            .attr("x1", function(d) { return runDotScale("lifeExpectancy", d, "ldc"); })
+                            .attr("x2", function(d) { return runDotScale("lifeExpectancy", d, "ldc"); });
+     svg_lifeExpectancy_comp.selectAll(".lineMarkerLabels")
+                            .attr("x", function(d) { return runDotScale("lifeExpectancy", d, "ldc"); })
+                            .attr("y", h_svgComp-5)
+                            .text(function(d,i) {
+                              if (i==0) { return "1960 USA avg"; }
+                              else { return "2016 USA avg"}
+                            })
+                            .call(wrap, 60)
+                            .style("text-anchor", function(d,i) {
+                              if (w >= 550) { return "middle"; }
+                              else {
+                                if (i==0) { return "end"; }
+                                else { return "start"; }
+                              }
+                            });
+     svg_lifeExpectancy_comp.selectAll("#axisLabelYear")
+                            .attr("x", function(d,i) {
+                              if (i==0) { return runDotScale("lifeExpectancy", 70, "ldc"); }
+                              else { return runDotScale("lifeExpectancy", 79, "ldc"); }
+                            });
+     svg_lifeExpectancy_comp.selectAll(".compAvgGroup").selectAll(".timelineRect")
+                            .attr("x", function(d) { return runDotScale("lifeExpectancy", d.old, "ldc"); })
+                            .attr("width", function(d) { return runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc"); });
+     svg_lifeExpectancy_comp.selectAll(".compAvgGroup").selectAll(".timelineDots_old")
+                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.old, "ldc"); });
+     svg_lifeExpectancy_comp.selectAll(".compAvgGroup").selectAll(".timelineDots")
+                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.latest, "ldc"); });
+     svg_lifeExpectancy_comp.selectAll(".compAvgGroup").selectAll(".timelineLabels")
+                            .attr("x", function(d) {
+                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.old, "ldc") + 15; }
+                              else { return runDotScale("lifeExpectancy", d.old, "ldc") - 10; }
+                            })
+                            .style("text-anchor", function(d) {
+                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return "start"; }
+                              else { return "end"; }
+                            });
+     svg_lifeExpectancy_comp.selectAll(".compAvgGroup").select("#axisLabelOld")
+                            .attr("x", function(d) {
+                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.old, "ldc")-15; }
+                              else { return runDotScale("lifeExpectancy", d.old, "ldc")+10; }
+                            })
+                            .style("text-anchor", function(d) {
+                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return "end"; }
+                              else { return "start"; }
+                            });
+     svg_lifeExpectancy_comp.selectAll(".compAvgGroup").select("#axisLabelLatest")
+                            .attr("x", function(d) {
+                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.latest, "ldc")+15; }
+                              else { return runDotScale("lifeExpectancy", d.latest, "ldc")-15; }
+                            })
+                            .style("text-anchor", function(d) {
+                              if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return "start"; }
+                              else { return "end"; }
+                            });
   }; // end resize function
   function wrap(text, width) { // text wrapping function
     text.each(function () {
@@ -668,19 +840,27 @@ function init() {
   function runDotScale(metric, value, type) {
     var variableOld = metric + "_old";
     var variableLatest = metric + "_latest";
-    if (type=="topline") { var min = d3.min(dataset_countries, function(d) { return d[variableLatest]; }); }
+    if (metric=="undernourished" | metric=="under5" | metric=="maternal") { var max = d3.max(dataset_countries, function(d) { return d[variableOld]; }); }
+    else { var max = d3.max(dataset_countries, function(d) { return d[variableLatest]; }); }
+    if (type=="topline") {
+      var min = d3.min(dataset_countries, function(d) { return d[variableLatest]; });
+      var dotScale = d3.scaleLinear()
+                       .domain([min, max])
+                       .range([marginLeft, w-20]);
+    }
     else if (type=="ldc") {
       if (metric=="undernourished" | metric=="under5" | metric=="maternal") { var min = d3.min(dataset_countries.filter(function(d) { return d.ldc==1; }), function(d) { return d[variableLatest]; }); }
       else { var min = d3.min(dataset_countries.filter(function(d) { return d.ldc==1; }), function(d) { return d[variableOld]; }); }
+      var dotScale = d3.scaleLinear()
+                       .domain([min, max])
+                       .range([marginLeftMore, w_maxDot]);
     }
     else { // world view which is only for life expectancy
       var min = d3.min(dataset_countries, function(d) { return d[variableOld]; });
+      var dotScale = d3.scaleLinear()
+                       .domain([min, max])
+                       .range([marginLeftMore, w_maxDot]);
     }
-    if (metric=="undernourished" | metric=="under5" | metric=="maternal") { var max = d3.max(dataset_countries, function(d) { return d[variableOld]; }); }
-    else { var max = d3.max(dataset_countries, function(d) { return d[variableLatest]; }); }
-    var dotScale = d3.scaleLinear()
-                     .domain([min, max])
-                     .range([marginLeftMore, w_maxDot]);
     return dotScale(value);
   }; // end runDotScale
   function randomGenerate(length, max) {
@@ -807,11 +987,7 @@ function init() {
        .attr("cx", function(d) { return runDotScale(metric, d[variableOld], scaleType); });
     svg.selectAll(".compGroup")
        .select(".timelineLabels")
-       .text(function(d) {
-         if (d.countryName == "Federated States of Micronesia") { return "Micronesia"; }
-         else if (d.countryName == "St. Vincent and the Grenadines") { return "St. Vincent & Grenadines"; }
-         else { return d.countryName; }
-       })
+       .text(function(d) { return d.countryName; })
        .attr("x", function(d) {
          if (metric=="lifeExpectancy" | metric=="undernourished" | metric=="under5" | metric=="maternal") {
            if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 107)
@@ -1177,6 +1353,7 @@ function init() {
   }; // end changeMetric
   reset();
   setup();
+  window.addEventListener("resize", resize);
 
   // Interactivity
   // TIMELINE BUTTONS
