@@ -4,7 +4,9 @@
 undernourished <- read.csv("Data files/Standards of living data - Undernourished.csv")
 under5 <- read.csv("Data files/Standards of living data - Under 5 mortality.csv") 
 sanitation <- read.csv("Data files/Standards of living data - Sanitation.csv") 
+sanitation <- sanitation[,-c(5:44, 61:63)]
 electricity <- read.csv("Data files/Standards of living data - Electricity.csv") 
+electricity <- electricity[,-c(5:34, 62, 63)]
 lifeExpectancy <- read.csv("Data files/Standards of living data - Life expectancy.csv") 
 healthExpenditure <- read.csv("Data files/Standards of living data - Health expenditure.csv") 
 maternal <- read.csv("Data files/Standards of living data - Maternal mortality.csv") 
@@ -44,11 +46,9 @@ changeColName <- function(variable, index) {
 merged <- merge(latest, undernourished[,c(2,5:ncol(undernourished))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
 for (i in 11:ncol(merged)) { names(merged)[i] <- changeColName("undernourished", i)}
 # Under 5
-summary(under5)
 merged <- merge(merged, under5[,c(2,5:ncol(under5))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
 for (i in 28:ncol(merged)) { names(merged)[i] <- changeColName("under5_", i)}
 # Life expectancy
-summary(lifeExpectancy)
 merged <- merge(merged, lifeExpectancy[,c(2,5:ncol(lifeExpectancy))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
 for (i in 86:ncol(merged)) { names(merged)[i] <- changeColName("lifeExpectancy", i)}
 # Sanitation
@@ -56,16 +56,17 @@ merged <- merge(merged, sanitation[,c(2,5:ncol(sanitation))], by.x="countryCode"
 for (i in 143:ncol(merged)) { names(merged)[i] <- changeColName("sanitation", i)}
 # Electricity
 merged <- merge(merged, electricity[,c(2,5:ncol(electricity))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
-for (i in 202:ncol(merged)) { names(merged)[i] <- changeColName("electricity", i)}
+names(merged)
+for (i in 159:ncol(merged)) { names(merged)[i] <- changeColName("electricity", i)}
 # Health expenditure
-summary(healthExpenditure)
 merged <- merge(merged, healthExpenditure[,c(2,5:ncol(healthExpenditure))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
-for (i in 261:ncol(merged)) { names(merged)[i] <- changeColName("healthExpenditure", i)}
+names(merged)
+for (i in 186:ncol(merged)) { names(merged)[i] <- changeColName("healthExpenditure", i)}
 # Maternal
-summary(maternal)
 merged <- merge(merged, maternal[,c(2,5:ncol(maternal))], by.x="countryCode", by.y="Country.Code", all.x = TRUE)
-for (i in 277:ncol(merged)) { names(merged)[i] <- changeColName("maternal", i)}
-names(merged) # 264 x 216
+names(merged)
+for (i in 202:ncol(merged)) { names(merged)[i] <- changeColName("maternal", i)}
+names(merged) 
 
 
 # Remove some "countries"
@@ -98,8 +99,14 @@ merged_edited[which(merged_edited$countryName=="Syrian Arab Republic"),]$country
 merged_edited[which(merged_edited$countryName=="Venezuela, RB"),]$countryName <- "Venezuela"
 merged_edited[which(merged_edited$countryName=="United States"),]$countryName <- "USA"
 merged_edited[which(merged_edited$countryName=="Yemen, Rep."),]$countryName <- "Yemen"
+merged_edited[which(merged_edited$countryName=="Sao Tome and Principe"),]$countryName <- "Sao Tome & Principe"
+merged_edited[which(merged_edited$countryName=="St. Kitts and Nevis"),]$countryName <- "St. Kitts & Nevis"
+merged_edited[which(merged_edited$countryName=="Trinidad and Tobago"),]$countryName <- "Trinidad & Tobago"
+merged_edited[which(merged_edited$countryName=="Bosnia and Herzegovina"),]$countryName <- "Bosnia & Herzegovina"
+merged_edited[which(merged_edited$countryName=="Antigua and Barbuda"),]$countryName <- "Antigua & Barbuda"
+merged_edited[which(merged_edited$countryName=="St. Vincent and the Grenadines"),]$countryName <- "St. Vincent & Grenadines"
 
-write.csv(merged, "Data files/merged_edited.csv", row.names = FALSE)
+write.csv(merged_edited, "Data files/merged_edited.csv", row.names = FALSE)
 
 
 # Analysis
