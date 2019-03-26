@@ -26,7 +26,7 @@ function init() {
   var h_svgTimeline = 500;
   var h_svgComp = 370;
   var h_svgOther_init = 200;
-  var h_svgOther = 475;
+  var h_svgOther = 490;
   document.getElementById("svg-lifeExpectancy_topline").style.height = h_svgTopline + "px";
   document.getElementById("svg-lifeExpectancy_timeline").style.height = h_svgTimeline + "px";
   document.getElementById("svg-lifeExpectancy_comp").style.height = h_svgComp + "px";
@@ -1147,6 +1147,7 @@ function init() {
     document.getElementById("svg-otherMetrics").style.height = h_svgOther_init + "px";
     document.getElementById("button-otherShow").style.display = "inline";
     document.getElementById("button-otherRandomize").style.display = "none";
+    document.getElementById("button-otherChange").style.backgroundColor = "transparent";
     document.getElementById("button-otherChange").style.display = "none";
     document.getElementById("button-otherMetric").style.display = "none";
     document.getElementById("otherMetricsTitle").innerHTML = "Access to electricity";
