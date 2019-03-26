@@ -915,7 +915,10 @@ function init() {
                      .style("fill", "none");
     svg_otherMetrics.selectAll(".compAvgGroup").data(dataset_compAvg);
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineRect")
-                     .attr("x", function(d) { return runDotScale(metric, d.latest, "ldc"); })
+                     .attr("x", function(d) {
+                       if ((metric=="undernourished" | metric=="under5" | metric=="maternal")) { return runDotScale(metric, d.latest, "ldc"); }
+                       else { return runDotScale(metric, d.old, "ldc"); }
+                     })
                      .attr("width", function(d) { return Math.abs(runDotScale(metric, d.old, "ldc") - runDotScale(metric, d.latest, "ldc")); });
     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots_old")
                     .attr("cx", function(d) { return runDotScale(metric, d.old, "ldc"); });
@@ -927,24 +930,25 @@ function init() {
                          if (d.old>99) { return runDotScale(metric, d.old, "ldc") + 45; }
                          else { return runDotScale(metric, d.old, "ldc") + 35; }
                        }
-                       else { return runDotScale(metric, d.old, "ldc") + 15; }
+                       else { return runDotScale(metric, d.latest, "ldc") + 15; }
                      });
     svg_otherMetrics.selectAll(".compAvgGroup").select("#axisLabelOld")
                      .text(function(d,i) { if (i!=1) { return Math.round(d.old); } })
                      .attr("x", function(d) {
                        if (metric=="undernourished" | metric=="under5" | metric=="maternal") { return runDotScale(metric, d.old, "ldc")+15; }
                        else { return runDotScale(metric, d.old, "ldc")-15; }
+                     })
+                     .style("text-anchor", function() {
+                       if (metric=="undernourished" | metric=="under5" | metric=="maternal") { return "start"; }
+                       else { return "end"; }
                      });
     svg_otherMetrics.selectAll(".compAvgGroup").select("#axisLabelLatest")
                      .text(function(d) { return Math.round(d.latest); })
                      .attr("x", function(d) {
-                       if (runDotScale(metric, d.latest, "ldc") - runDotScale(metric, d.old, "ldc") > 90) { return runDotScale(metric, d.latest, "ldc")+15; }
+                       if (Math.abs(runDotScale(metric, d.latest, "ldc") - runDotScale(metric, d.old, "ldc")) > 90) { return runDotScale(metric, d.latest, "ldc")-15; }
                        else { return runDotScale(metric, d.latest, "ldc")-15; }
                      })
-                     .style("text-anchor", function(d) {
-                       if (runDotScale(metric, d.latest, "ldc") - runDotScale(metric, d.old, "ldc") > 90) { return "start"; }
-                       else { return "end"; }
-                     });
+                     .style("text-anchor", "end");
     dataset_otherMetrics = dataset_countries.filter(function(d) { return !isNaN(d[variableLatest]) & !isNaN(d[variableOld]) & d.ldc == 1; });
     var randomArray10 = randomGenerate(15, dataset_otherMetrics.length);
     if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
@@ -956,7 +960,10 @@ function init() {
                      .attr("x", function(d) { return runDotScale(metric, d[variableOld], "ldc"); })
                      .attr("width",0);
     svg_otherMetrics.selectAll(".compGroup").select(".timelineDots")
-                     .attr("cx", function(d) { return runDotScale(metric, d[variableOld], "ldc"); })
+                     .attr("cx", function(d) {
+                       if (metric=="undernourished" | metric=="under5" | metric=="maternal") { return runDotScale(metric, d[variableOld], "ldc"); }
+                       else { return runDotScale(metric, d[variableLatest], "ldc"); }
+                     })
                      .style("fill", "none");
     svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
                      .attr("cx", runDotScale(metric, dataset_compAvg.filter(function(d) { return d.country=="LDC"})[0].old, "ldc"))
@@ -964,20 +971,42 @@ function init() {
     svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
                     .text(function(d) { return d.countryName; })
                      .attr("x", function(d) {
-                       // if it doesn't fit into rect
-                       if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 90)
-                        if (d[variableOld] > d[variableLatest]){ return runDotScale(metric, d[variableOld], "ldc") - 10; }
-                        else { return runDotScale(metric, d[variableOld], "ldc") + 15; }
-                       else if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "ldc") + 15; }
-                       else { return runDotScale(metric, d[variableOld], "ldc") - 15; } // if increased over time
+                       if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+                         if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 90)
+                          if (d[variableOld] > d[variableLatest]){ return runDotScale(metric, d[variableOld], "ldc") - 10; }
+                          else { return runDotScale(metric, d[variableOld], "ldc") + 15; }
+                         else if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "ldc") + 15; }
+                         else { return runDotScale(metric, d[variableOld], "ldc") - 15; } // if increased over time
+                       }
+                       else {
+                         // if it fits
+                         if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 90)
+                         // if older is greater than latest
+                          if (d[variableOld] > d[variableLatest]){ return runDotScale(metric, d[variableOld], "ldc") - 10; }
+                          else { return runDotScale(metric, d[variableLatest], "ldc") - 10; }
+                         // if it doesn't fit and older is greater than latest
+                         else if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "ldc") + 15; }
+                         // if it doesn't fit and latest is greater
+                         else { return runDotScale(metric, d[variableLatest], "ldc") + 15; }
+                       }
                      })
                      .style("text-anchor", function(d) {
-                       if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 90) {
-                         if (d[variableOld] > d[variableLatest]) { return "end"; }
+                       if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+                         if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 90) {
+                           if (d[variableOld] > d[variableLatest]) { return "end"; }
+                           else { return "start"; }
+                         }
+                         else if (d[variableOld] > d[variableLatest]) { return "start"; }
+                         else { return "end"; }
+                       }
+                       else {
+                         if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 90) {
+                           if (d[variableOld] > d[variableLatest]) { return "end"; }
+                           else { return "end"; }
+                         }
+                         else if (d[variableOld] > d[variableLatest]) { return "start"; }
                          else { return "start"; }
                        }
-                       else if (d[variableOld] > d[variableLatest]) { return "start"; }
-                       else { return "end"; }
                      })
                      .style("fill", "none");
     svg_otherMetrics.selectAll(".compGroup")
@@ -991,8 +1020,16 @@ function init() {
                                 .attr("x", function(d) {
                                   // if country name doesn't fit in rectangle
                                   if (Math.abs(runDotScale(metric, d[variableLatest], "ldc") - runDotScale(metric, d[variableOld], "ldc")) < 90) {
-                                    if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "ldc") + parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) + 20; }
-                                    else { return runDotScale(metric, d[variableOld], "ldc") - parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) - 20; }
+                                    if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+                                      if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "ldc") + parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) + 20; }
+                                      else { return runDotScale(metric, d[variableOld], "ldc") - parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) - 20; }
+                                    }
+                                    // for the sanitation and electricity access
+                                    else {
+                                      // if old is larger than latest
+                                      if (d[variableOld] > d[variableLatest]) { return runDotScale(metric, d[variableOld], "ldc") + parseFloat(currGroup.select(".timelineLabels").node().getBBox().width) + 20; }
+                                      else { return runDotScale(metric, d[variableOld], "ldc") - 15; }
+                                    }
                                   }
                                   // if it does fit
                                   else {
@@ -1013,8 +1050,17 @@ function init() {
                                .attr("class", "axisLabel")
                                .text(function(d) { return Math.round(d[variableLatest]); })
                                .attr("x", function(d) {
-                                 if (d[variableOld] < d[variableLatest]) { return runDotScale(metric, d[variableLatest], "ldc") + 15; }
-                                 else { return parseFloat(currGroup.select(".timelineDots").attr("cx"))-15; }
+                                 if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
+                                   if (d[variableOld] < d[variableLatest]) { return runDotScale(metric, d[variableLatest], "ldc") + 15; }
+                                   else { return parseFloat(currGroup.select(".timelineDots").attr("cx"))-15; }
+                                 }
+                                 else {
+                                   if (Math.abs(runDotScale(metric, d[variableLatest], "ldc") - runDotScale(metric, d[variableOld], "ldc")) > 90) {
+                                     if (d[variableOld] < d[variableLatest]) { return runDotScale(metric, d[variableLatest], "ldc") + parseFloat(currGroup.select(".timelineLabels").attr("x")) + 15; }
+                                     else { return runDotScale(metric, d[variableLatest], "ldc") - 15; }
+                                   }
+                                   else { return parseFloat(currGroup.select(".timelineDots").attr("cx"))-15; }
+                                 }
                                })
                                .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
                                .style("text-anchor", function(d) {
@@ -1106,8 +1152,7 @@ function init() {
     d3.select(this).style("background-color", accentColor);
   }); // end on click button-change
   // LDC accordion
-  var accordion = jQuery(".accordion");
-  accordion.addEventListener("click", function() {
+  jQuery(".accordion").on("click", function() {
     var panel = this.nextElementSibling;
     if (panel.style.maxHeight) { // if hiding panel
       this.classList.remove("active");
@@ -1186,10 +1231,10 @@ function rowConverter(d) {
     undernourished_latest: parseFloat(d.undernourished2016),
     under5_old: parseFloat(d.under5_1960),
     under5_latest: parseFloat(d.under5_2017),
-    sanitationUrban_old: parseFloat(d.sanitationUrban2000),
-    sanitationUrban_latest: parseFloat(d.sanitationUrban2015),
-    sanitationRural_old: parseFloat(d.sanitationRural2000),
-    sanitationRural_latest: parseFloat(d.sanitationRural2015),
+    sanitation_old: parseFloat(d.sanitation2000),
+    sanitation_latest: parseFloat(d.sanitation2015),
+    electricity_old: parseFloat(d.electricity1990),
+    electricity_latest: parseFloat(d.electricity2016),
     lifeExpectancy_old: parseFloat(d.lifeExpectancy1960),
     lifeExpectancy_latest: parseFloat(d.lifeExpectancy2016),
     healthExpenditure_old: parseFloat(d.healthExpenditure2000),
