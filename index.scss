@@ -13,7 +13,6 @@ body {
 #intro-wrapper {
   background-color: $babyBlue;
   padding-top: 6rem;
-  padding-bottom: 50px;
 }
 #intro {
   max-width: 40rem;
@@ -55,10 +54,6 @@ button {
   margin: 1px;
   margin-left: 10px;
   margin-right: 10px;
-}
-.section-text {
-  margin-top: 40px;
-  margin-bottom: 40px;
 }
 #main-wrapper {
   background-color: $backgroundGray;
@@ -241,6 +236,10 @@ ul {
 
 
 @media screen and (min-width:399px) {
+  #intro-wrapper {
+    padding-top: 6rem;
+    padding-bottom: 50px;
+  }
   h1 {
     font-size: 50px;
     text-align: center;
@@ -256,6 +255,10 @@ ul {
     font-weight: 200;
     line-height: 1.5;
   }
+  .section-text {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
   .highlightText {
     font-size: 13px;
   }
@@ -267,9 +270,14 @@ ul {
   }
   .chart-title {
     font-size: 20px;
+    margin-bottom: 5px;
+  }
+  .chart-subhead {
+    font-size: 13px;
+    margin-bottom: 25px;
   }
   button {
-    font-size: 12px;
+    font-size: 13px;
   }
   .accordion {
     font-size: 16px;
@@ -280,10 +288,17 @@ ul {
   #otherMetricsTitle {
     font-size: 18px;
   }
+  #button-metricsContainer {
+    margin-top: 20px;
+  }
 }
 @media screen and (max-width:400px) {
+  #intro-wrapper {
+    padding-top: 3rem;
+    padding-bottom: 10px;
+  }
   h1 {
-    font-size: 28px;
+    font-size: 26px;
     text-align: center;
     margin: 0;
     font-weight: 900;
@@ -300,6 +315,10 @@ ul {
     font-weight: 200;
     line-height: 1.5;
   }
+  .section-text {
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
   .highlightText {
     font-size: 11px;
   }
@@ -311,9 +330,14 @@ ul {
   }
   .chart-title {
     font-size: 15px;
+    margin-bottom: 5px;
+  }
+  .chart-subhead {
+    font-size: 11px;
+    margin-bottom: 10px;
   }
   button {
-    font-size: 10px;
+    font-size: 11px;
   }
   .accordion {
     font-size: 13px;
@@ -322,6 +346,9 @@ ul {
     font-size: 11px;
   }
   #otherMetricsTitle {
-    font-size: 15px;
+    font-size: 14px;
+  }
+  #button-metricsContainer {
+    margin-top: 10px;
   }
 }

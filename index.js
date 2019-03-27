@@ -168,14 +168,25 @@ function init() {
                                .attr("class", "timelineLabels")
                                .text(function(d) { return d.countryName; })
                                .attr("x", function(d) {
-                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 107) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") + 10; }
-                                 else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") - 10; }
+                                 // if it fits
+                                 if (Math.abs(runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc")) > 107)
+                                 // if older is greater than latest
+                                  if (d.lifeExpectancy_old > d.lifeExpectancy_latest){ return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - 10; }
+                                  else { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - 10; }
+                                 // if it doesn't fit and older is greater than latest
+                                 else if (d.lifeExpectancy_old > d.lifeExpectancy_latest) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") + 15; }
+                                 // if it doesn't fit and latest is greater
+                                 else { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") + 15; }
                                })
-                               .attr("y", function(d,i) { return 29 + (i*22)})
                                .style("text-anchor", function(d) {
-                                 if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 107) { return "start"; }
-                                 else { return "end"; }
-                               });
+                                 if (Math.abs(runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc")) > 107) {
+                                   if (d.lifeExpectancy_old > d.lifeExpectancy_latest) { return "end"; }
+                                   else { return "end"; }
+                                 }
+                                 else if (d.lifeExpectancy_old > d.lifeExpectancy_latest) { return "start"; }
+                                 else { return "start"; }
+                               })
+                               .attr("y", function(d,i) { return 29 + (i*22)});
     svg_lifeExpectancy_timeline.selectAll("axisLabel")
                                .data(["1960", "2016"])
                                .enter()
@@ -197,22 +208,24 @@ function init() {
                                  currGroup.append("text")
                                           .attr("class", "axisLabel")
                                           .text(function(d) { return Math.round(d.lifeExpectancy_old); })
-                                          .attr("x", function(d) {
-                                            if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 107) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
-                                            else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
-                                          })
+                                          .attr("x", function(d) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; })
                                           .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                                          .style("text-anchor", function(d) {
-                                            if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "timeline") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "timeline") > 107) { return "end"; }
-                                            else { return "start"; }
-                                          })
+                                          .style("text-anchor", "end")
                                           .style("fill", accentColor);
                                 currGroup.append("text")
                                          .attr("class", "axisLabel")
                                          .text(function(d) { return Math.round(d.lifeExpectancy_latest); })
-                                         .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
+                                         .attr("x", function(d) {
+                                           // if it fits
+                                           if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return parseFloat(currGroup.select(".timelineDots").attr("cx"))+15; }
+                                           // if it doesn't fit
+                                           else { return parseFloat(currGroup.select(".timelineDots").attr("cx"))-10; }
+                                         })
                                          .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                                         .style("text-anchor", "start")
+                                         .style("text-anchor", function(d) {
+                                           if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return "start"; }
+                                           else { return "end"; }
+                                         })
                                          .style("fill", accentColor);
                                })
                                .on("mouseout", function() {
@@ -430,14 +443,25 @@ function init() {
                            .text(function(d) { return d.countryName; })
                            .attr("class", "timelineLabels")
                            .attr("x", function(d) {
-                             if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") + 10; }
-                             else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - 10; }
+                             // if it fits
+                             if (Math.abs(runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc")) > 107)
+                             // if older is greater than latest
+                              if (d.lifeExpectancy_old > d.lifeExpectancy_latest){ return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - 10; }
+                              else { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - 10; }
+                             // if it doesn't fit and older is greater than latest
+                             else if (d.lifeExpectancy_old > d.lifeExpectancy_latest) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") + 15; }
+                             // if it doesn't fit and latest is greater
+                             else { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") + 15; }
                            })
-                           .attr("y", function(d,i) { return 79 + (i+1)*25; })
                            .style("text-anchor", function(d) {
-                             if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return "start"; }
-                             else { return "end"; }
-                           });
+                             if (Math.abs(runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc")) > 107) {
+                               if (d.lifeExpectancy_old > d.lifeExpectancy_latest) { return "end"; }
+                               else { return "end"; }
+                             }
+                             else if (d.lifeExpectancy_old > d.lifeExpectancy_latest) { return "start"; }
+                             else { return "start"; }
+                           })
+                           .attr("y", function(d,i) { return 79 + (i+1)*25; });
     svg_lifeExpectancy_comp.selectAll(".compGroup")
                            .on("mouseover", function(d) {
                              var currGroup = d3.select(this);
@@ -446,22 +470,24 @@ function init() {
                              currGroup.append("text")
                                       .attr("class", "axisLabel")
                                       .text(function(d) { return Math.round(d.lifeExpectancy_old); })
-                                      .attr("x", function(d) {
-                                        if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; }
-                                        else { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))+10; }
-                                      })
+                                      .attr("x", function(d) { return parseFloat(currGroup.select(".timelineDots_old").attr("cx"))-15; })
                                       .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                                      .style("text-anchor", function(d) {
-                                        if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return "end"; }
-                                        else { return "start"; }
-                                      })
+                                      .style("text-anchor", "end")
                                       .style("fill", accentColor);
                             currGroup.append("text")
                                      .attr("class", "axisLabel")
                                      .text(function(d) { return Math.round(d.lifeExpectancy_latest); })
-                                     .attr("x", parseFloat(currGroup.select(".timelineDots").attr("cx"))+15)
+                                     .attr("x", function(d) {
+                                       // if it fits
+                                       if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return parseFloat(currGroup.select(".timelineDots").attr("cx"))+15; }
+                                       // if it doesn't fit
+                                       else { return parseFloat(currGroup.select(".timelineDots").attr("cx"))-10; }
+                                     })
                                      .attr("y", parseFloat(currGroup.select(".timelineLabels").attr("y")))
-                                     .style("text-anchor", "start")
+                                     .style("text-anchor", function(d) {
+                                       if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return "start"; }
+                                       else { return "end"; }
+                                     })
                                      .style("fill", accentColor);
                            })
                            .on("mouseout", function() {
@@ -879,6 +905,14 @@ function init() {
                           }
                         })
                         .attr("width", function(d) { return Math.abs(runDotScale(currOtherMetric, d[variableLatest], "ldc") - runDotScale(currOtherMetric, d[variableOld], "ldc")); })
+                        .attr("y", function(d,i) {
+                          if (w>=500) { return 79 + (i+1)*25; }
+                          else { return 80 + (i+1)*25; }
+                        })
+                        .attr("height", function() {
+                          if (w>=500) { return 12; }
+                          else { return 10; }
+                        });
        svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
                         .attr("cx", function(d) { return runDotScale(currOtherMetric, d[variableOld], "ldc"); })
                         .attr("r", function() {
@@ -1278,7 +1312,7 @@ function init() {
        .select(".timelineLabels")
        .text(function(d) { return d.countryName; })
        .attr("x", function(d) {
-         if (metric=="lifeExpectancy" | metric=="undernourished" | metric=="under5" | metric=="maternal") {
+         if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
            if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 107)
             if (d[variableOld] > d[variableLatest]){ return runDotScale(metric, d[variableOld], "ldc") - 10; }
             else { return runDotScale(metric, d[variableOld], "ldc") + 15; }
@@ -1298,7 +1332,7 @@ function init() {
          }
        })
        .style("text-anchor", function(d) {
-         if (metric=="lifeExpectancy" | metric=="undernourished" | metric=="under5" | metric=="maternal") {
+         if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
            if (Math.abs(runDotScale(metric, d[variableOld], "ldc") - runDotScale(metric, d[variableLatest], "ldc")) > 107) {
              if (d[variableOld] > d[variableLatest]) { return "end"; }
              else { return "start"; }
