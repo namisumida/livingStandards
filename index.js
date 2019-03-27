@@ -799,6 +799,123 @@ function init() {
                               if (runDotScale("lifeExpectancy", d.latest, "ldc") - runDotScale("lifeExpectancy", d.old, "ldc") > 107) { return "start"; }
                               else { return "end"; }
                             });
+     svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineRect")
+                            .attr("width", function(d) { return Math.abs(runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc")); })
+                            .attr("x", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc"); });
+     svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineDots")
+                            .attr("r", function() {
+                              if (w>=500) { return 7; }
+                              else { return 5; }
+                            })
+                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc"); });
+     svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineDots_old")
+                            .attr("r", function() {
+                              if (w>=500) { return 7; }
+                              else { return 5; }
+                            })
+                            .attr("cx", function(d) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc"); });
+     svg_lifeExpectancy_comp.selectAll(".compGroup").select(".timelineLabels")
+                            .attr("x", function(d) {
+                              if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") + 10; }
+                              else { return runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") - 10; }
+                            })
+                            .style("text-anchor", function(d) {
+                              if (runDotScale("lifeExpectancy", d.lifeExpectancy_latest, "ldc") - runDotScale("lifeExpectancy", d.lifeExpectancy_old, "ldc") > 107) { return "start"; }
+                              else { return "end"; }
+                            });
+     // Other metrics svg
+     svg_otherMetrics.selectAll(".lineMarkers_timeline")
+                      .attr("x1", function(d) { return runDotScale("undernourished", d, "ldc"); })
+                      .attr("x2", function(d) { return runDotScale("undernourished", d, "ldc"); });
+     svg_otherMetrics.selectAll(".lineMarkerLabels")
+                      .attr("x", function(d) { return runDotScale("undernourished", d, "ldc"); })
+                      .attr("y", h_svgOther-5)
+                      .text("US avg")
+                      .call(wrap, 60);
+     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineRect")
+                      .attr("x", function(d) { return runDotScale("undernourished", d.latest, "ldc"); })
+                      .attr("width", function(d) { return runDotScale("undernourished", d.old, "ldc") - runDotScale("undernourished", d.latest, "ldc"); });
+     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots_old")
+                      .attr("cx", function(d) { return runDotScale("undernourished", d.old, "ldc"); })
+                      .attr("r", function(d,i) {
+                        if (i==1) {
+                          if (w>=500) { return 10; }
+                          else { return 7; }
+                        }
+                        else {
+                          if (w>=500) { return 7; }
+                          else { return 5; }
+                        }
+                      });
+     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineDots")
+                      .attr("cx", function(d) { return runDotScale("undernourished", d.latest, "ldc"); })
+                      .attr("r", function(d,i) {
+                        if (i==1) {
+                          if (w>=500) { return 10; }
+                          else { return 7; }
+                        }
+                        else {
+                          if (w>=500) { return 7; }
+                          else { return 5; }
+                        }
+                      });
+     svg_otherMetrics.selectAll(".compAvgGroup").select(".timelineLabels")
+                      .text(function(d,i) {
+                        if (i==0) { return "World (avg)"; }
+                        else if (i==1) { return "USA"; }
+                        else { return "LDC (avg)"; }
+                      })
+                      .attr("x", function(d,i) {
+                        if (i!=1) { return runDotScale("undernourished", d.old, "ldc") + 35; }
+                        else { return runDotScale("undernourished", d.old, "ldc") + 15; }
+                      });
+     svg_otherMetrics.selectAll(".compAvgGroup").select("#axisLabelOld")
+                      .attr("x", function(d) { return runDotScale("undernourished", d.old, "ldc")+15; });
+     svg_otherMetrics.selectAll(".compAvgGroup").select("#axisLabelLatest")
+                      .attr("x", function(d) {
+                        if (runDotScale("undernourished", d.latest, "ldc") - runDotScale("undernourished", d.old, "ldc") > 107) { return runDotScale("undernourished", d.latest, "ldc")+15; }
+                        else { return runDotScale("undernourished", d.latest, "ldc")-15; }
+                      })
+                      .style("text-anchor", function(d) {
+                        if (runDotScale("undernourished", d.latest, "ldc") - runDotScale("undernourished", d.old, "ldc") > 107) { return "start"; }
+                        else { return "end"; }
+                      });
+     svg_otherMetrics.selectAll("axisLabel").select("#axisLabelYear")
+                      .attr("x", function(d,i) {
+                        if (i==0) { return runDotScale("undernourished", 15, "timeline"); }
+                        else { return runDotScale("undernourished", 11, "timeline"); }
+                      });
+     svg_otherMetrics.selectAll(".compGroup").select(".timelineRect")
+                      .attr("x", function(d) { return runDotScale("undernourished", d.undernourished_old, "ldc"); });
+     svg_otherMetrics.selectAll(".compGroup").select(".timelineDots")
+                      .attr("r", function() {
+                        if (w>=500) { return 7; }
+                        else { return 5; }
+                      })
+                      .attr("cx", function(d) { return runDotScale("undernourished", d.undernourished_old, "ldc"); });
+     svg_otherMetrics.selectAll(".compGroup").select(".timelineDots_old")
+                      .attr("r", function() {
+                        if (w>=500) { return 7; }
+                        else { return 5; }
+                      })
+                      .attr("cx", runDotScale("undernourished", 35, "ldc"));
+     svg_otherMetrics.selectAll(".compGroup").select(".timelineLabels")
+                      .attr("x", function(d) {
+                        // if it doesn't fit into rect
+                        if (Math.abs(runDotScale("undernourished", d.undernourished_old, "ldc") - runDotScale("undernourished", d.undernourished_latest, "ldc")) > 107)
+                         if (d.undernourished_old > d.undernourished_latest){ return runDotScale("undernourished", d.undernourished_old, "ldc") - 10; }
+                         else { return runDotScale("undernourished", d.undernourished_old, "ldc") + 15; }
+                        else if (d.undernourished_old > d.undernourished_latest) { return runDotScale("undernourished", d.undernourished_old, "ldc") + 15; }
+                        else { return runDotScale("undernourished", d.undernourished_old, "ldc") - 15; } // if increased over time
+                      })
+                      .style("text-anchor", function(d) {
+                        if (Math.abs(runDotScale("undernourished", d.undernourished_old, "ldc") - runDotScale("undernourished", d.undernourished_latest, "ldc")) > 107) {
+                          if (d.undernourished_old > d.undernourished_latest) { return "end"; }
+                          else { return "start"; }
+                        }
+                        else if (d.undernourished_old > d.undernourished_latest) { return "start"; }
+                        else { return "end"; }
+                      });
   }; // end resize function
   function wrap(text, width) { // text wrapping function
     text.each(function () {

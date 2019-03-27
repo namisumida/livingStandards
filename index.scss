@@ -176,7 +176,6 @@ ul {
 #otherMetricsTitle {
   margin-top: 20px;
   margin-bottom: 20px;
-  font-size: 18px;
 }
 #otherMetricsSubhead {
   font-size: 12px;
@@ -278,6 +277,9 @@ ul {
   #methods-text {
     font-size: 13px;
   }
+  #otherMetricsTitle {
+    font-size: 18px;
+  }
 }
 @media screen and (max-width:400px) {
   h1 {
@@ -318,5 +320,8 @@ ul {
   }
   #methods-text {
     font-size: 11px;
+  }
+  #otherMetricsTitle {
+    font-size: 15px;
   }
 }
