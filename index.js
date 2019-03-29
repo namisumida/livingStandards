@@ -8,7 +8,7 @@ function init() {
   var dataset_randomSubset;
   var dataset_metric; // dataset that holds countries that qualify for currOtherMetric;
   var dataset_randomSubset; // dataset that holds random set of countries that will be displayed
-  var sort, currOtherMetric;
+  var sortWorld, sortComp, sortOther, currOtherMetric;
   // Margins
   var w = document.getElementById("svg-lifeExpectancy_comp").getBoundingClientRect().width;
   var marginLeft = 10;
@@ -762,7 +762,7 @@ function init() {
 
   }; // end setup
   function reset() {
-    sort = "metric";
+    sortWorld = sortComp = sortOther = "metric";
     currOtherMetric = "undernourished";
     dataset_compAvg = [{"country": "world", "old": 15, "latest": 11}, {"country": "USA", "old": 2.5, "latest": 2.5}, {"country": "LDC", "old": 35, "latest": 23}];
   }; // end reset function
@@ -1066,11 +1066,11 @@ function init() {
     if (svgID==1) { // world view
       var scaleType = "world";
       if (type == "sortChange") {
-        sort = "change";
+        sortWorld = "change";
         svg.selectAll(".compGroup").data(dataset_randomWorldSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }));
       }
       else if (type == "sortMetric") {
-        sort = "metric";
+        sortWorld = "metric";
         svg.selectAll(".compGroup").data(dataset_randomWorldSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }));
       }
       else if (type=="randomize") { // randomize
@@ -1078,7 +1078,7 @@ function init() {
         var randomArray = randomGenerate(20, dataset_metric.length);
         dataset_randomWorldSubset = dataset_metric.filter(function(d,i) { return randomArray.includes(i); });
         // Sort appropriately
-        if (sort == "metric") { dataset_randomWorldSubset = dataset_randomWorldSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+        if (sortWorld == "metric") { dataset_randomWorldSubset = dataset_randomWorldSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
         else { dataset_randomWorldSubset = dataset_randomWorldSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }) };
         // Set new data to groups
         svg.selectAll(".compGroup").data(dataset_randomWorldSubset);
@@ -1127,18 +1127,18 @@ function init() {
       var scaleType = "ldc";
       dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d[variableOld]) & !isNaN(d[variableLatest]) & d.ldc == 1; });
       if (type == "sortChange") {
-        sort = "change";
+        sortComp = "change";
         svg.selectAll(".compGroup").data(dataset_randomCompSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }));
         dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d[variableOld]) & !isNaN(d[variableLatest]) & d.ldc == 1; });
       }
       else if (type == "sortMetric") {
-        sort = "metric";
+        sortComp = "metric";
         svg.selectAll(".compGroup").data(dataset_randomCompSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }));
       }
       else if (type=="randomize") { // randomize
         var randomArray = randomGenerate(10, dataset_metric.length);
         dataset_randomCompSubset = dataset_metric.filter(function(d,i) { return randomArray.includes(i); });
-        if (sort == "metric") { dataset_randomCompSubset = dataset_randomCompSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
+        if (sortComp == "metric") { dataset_randomCompSubset = dataset_randomCompSubset.sort(function(a,b) { return b[variableLatest] - a[variableLatest]; }) }
         else { dataset_randomCompSubset = dataset_randomCompSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); }) };
         // Set new data to groups
         svg.selectAll(".compGroup").data(dataset_randomCompSubset);
@@ -1262,14 +1262,14 @@ function init() {
     else {
       var scaleType = "ldc";
       if (type == "sortChange") {
-        sort = "change";
+        sortOther = "change";
         if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
           svg.selectAll(".compGroup").data(dataset_randomOtherSubset.sort(function(a,b) { return (a[variableLatest]-a[variableOld]) - (b[variableLatest]-b[variableOld]); }))
         }
         else { svg.selectAll(".compGroup").data(dataset_randomOtherSubset.sort(function(a,b) { return (b[variableLatest]-b[variableOld]) - (a[variableLatest]-a[variableOld]); })); }
       }
       else if (type == "sortMetric") {
-        sort = "metric";
+        sortOther = "metric";
         if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
           dataset_randomOtherSubset = dataset_randomOtherSubset.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; })
         }
@@ -1279,7 +1279,7 @@ function init() {
         dataset_metric = dataset_countries.filter(function(d) { return !isNaN(d[variableOld]) & !isNaN(d[variableLatest]) & d.ldc == 1; });
         var randomArray = randomGenerate(15, dataset_metric.length);
         dataset_randomOtherSubset = dataset_metric.filter(function(d,i) { return randomArray.includes(i); });
-        if (sort == "metric") {
+        if (sortOther == "metric") {
           if (metric=="undernourished" | metric=="under5" | metric=="maternal") {
             dataset_randomOtherSubset = dataset_randomOtherSubset.sort(function(a,b) { return a[variableLatest] - b[variableLatest]; })
           }
@@ -1465,6 +1465,7 @@ function init() {
   // Changes metric for otherMetric svg
   function changeMetric(metric) { // change to a different metric
     d3.selectAll(".button-otherMetrics").style("background-color", "transparent"); // make all buttons transparent
+    sortOther = "metric";
     var variableOld = metric+"_old";
     var variableLatest = metric+"_latest";
     if (metric=="undernourished") {
