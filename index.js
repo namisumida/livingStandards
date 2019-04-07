@@ -1019,11 +1019,6 @@ function init() {
       }
     });
   }; // end wrap function
-  d3.selection.prototype.moveToFront = function() {
-        return this.each(function(){
-          this.parentNode.appendChild(this);
-        });
-  }; // end moveToFront function
   function runDotScale(metric, value, type) {
     var variableOld = metric + "_old";
     var variableLatest = metric + "_latest";
